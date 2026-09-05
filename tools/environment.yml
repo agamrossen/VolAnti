@@ -1,0 +1,16 @@
+# Offline analysis environment for the reference detector and the test tools.
+#   conda env create -f tools/environment.yml
+#   conda activate volanti
+name: volanti
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - matplotlib
+  - soundfile
+  - sounddevice
+  - pyserial
+  - pytest
+  - tqdm

@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+title: "VolAnti: an open-source acoustic detector for radio-silent multirotor drones"
+message: "If you use this work, please cite it."
+type: software
+authors:
+  - family-names: Rossen
+    given-names: Agam
+    affiliation: "University of York, Department of Electronic Engineering"
+repository-code: "https://github.com/agamrossen/VolAnti"
+url: "https://agamrossen.github.io/VolAnti/"
+abstract: >-
+  VolAnti detects small multirotor aircraft acoustically, by tracking the
+  harmonic comb produced by spinning propellers, rather than by listening for a
+  control link. This makes it effective against fibre-optic FPV airframes and
+  other aircraft that emit no radio signal. The design is a four-microphone
+  array on an ESP32-S3, a four-tier detector stack running every 32 ms, and a
+  LoRa peer-alert link, in a printed weather-resistant enclosure.
+keywords:
+  - acoustic detection
+  - drone detection
+  - harmonic comb
+  - microphone array
+  - embedded DSP
+  - ESP32
+  - open hardware
+license: Apache-2.0
