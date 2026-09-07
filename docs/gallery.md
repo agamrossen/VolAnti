@@ -116,7 +116,7 @@ Everything from the build, in order, then the field session videos, then the res
 **19:14.**  
 [<img src="media/field/20260906_191406.jpg" width="480" alt="19:14.">](media/field/20260906_191406.mp4)
 
-## The 21 August session and the rig
+## The rig and the 21 August session
 
 <img src="images/field1-rig.jpg" width="640" alt="The rig staked on open ground">
 
@@ -200,6 +200,9 @@ Every photo taken during the build, by date.
 <img src="images/archive/20260904_131655.jpg" width="420" alt="2026-09-04"> 
 <img src="images/archive/20260904_131848.jpg" width="420" alt="2026-09-04"> 
 <img src="images/archive/20260904_160717.jpg" width="420" alt="2026-09-04"> 
+<img src="images/archive/20260907_bench.jpg" width="420" alt="2026-09-07"> 
+<img src="images/archive/20260907_lids.jpg" width="420" alt="2026-09-07"> 
+<img src="images/archive/20260907_nine-units.jpg" width="420" alt="2026-09-07"> 
 <img src="images/archive/IMG-20260811-WA0009.jpg" width="420" alt="2026-08-11"> 
 <img src="images/archive/IMG-20260813-WA0006.jpg" width="420" alt="2026-08-13"> 
 <img src="images/archive/IMG-20260813-WA0008.jpg" width="420" alt="2026-08-13"> 

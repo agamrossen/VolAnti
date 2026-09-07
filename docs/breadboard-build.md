@@ -25,7 +25,7 @@ Plus a breadboard, male-to-male jumpers, 10 µF and 100 nF rail capacitors, and 
 
 <img src="breadboard-schematic.png" width="100%" alt="Wiring schematic">
 
-[SVG version](breadboard-schematic.svg). The hole-by-hole layout for a Protobloc 2C board, with the rail map and the checks at every stage, is [breadboard-lab-manual-v9.pdf](breadboard-lab-manual-v9.pdf).
+[SVG version](breadboard-schematic.svg). The hole-by-hole layout with the rail map and the checks at every stage is [breadboard-lab-manual-v9.pdf](breadboard-lab-manual-v9.pdf), for a Protobloc 2C board. The earlier [v5 manual](breadboard-lab-manual-v5.pdf) does the same build on five clipped 830-point breadboards, if that is what you have.
 
 All four microphones share one clock pair. They split across two data lines, two mics each, and the L/R pin picks which slot each one drives.
 

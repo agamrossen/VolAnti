@@ -13,6 +13,8 @@
 
 All STLs are in millimetres and print at 100 %. STEP files are there for anyone changing the design.
 
+<img src="../../docs/images/lids.jpg" width="100%" alt="Seven printed lids">
+
 ## Print settings
 
 Every unit so far: 0.4 mm nozzle, 3 perimeters, 20 to 25 % infill, 0.2 mm layers, black PETG. Grille rings at 0.1 mm layers so the ramp comes out smooth. Elephant-foot compensation on, several fits are first-layer critical. If your slicer wants supports, the part is the wrong way up.

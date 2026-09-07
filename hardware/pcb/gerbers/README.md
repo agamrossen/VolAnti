@@ -1,3 +1,3 @@
 # Gerbers
 
-Rev A2 gerber and drill set, zipped the way JLCPCB takes it: `VolAnti_revA2_gerbers.zip`. Board 84 × 84 mm, four layers, 1.6 mm, ENIG. Upload the zip as it is, then add `../bom.csv` and `../pick-and-place.csv` for assembly.
+`VolAnti_revA2_gerbers.zip` is the fabrication export straight from Flux: all four copper layers, mask, paste and silk for both sides, the board outline, the drill file, the IPC-D-356 netlist, the pick and place file, and a BOM in each of the formats JLCPCB, PCBWay, Eurocircuits, Seeed, Elecrow, AllPCB and Advanced Circuits ask for. Board 84 × 84 mm, four layers, 1.6 mm, ENIG. Upload the zip as it is.

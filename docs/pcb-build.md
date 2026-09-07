@@ -2,7 +2,7 @@
 
 Custom four-layer board, four printed parts, a battery, a screen and a radio in a sealed 91 mm box. Two evenings once the parts arrive. The board comes from the fab with everything placed except four through-hole parts.
 
-<img src="images/two-units.jpg" width="100%" alt="Two finished units">
+<img src="images/bench.jpg" width="100%" alt="Boards in their bases, lids alongside, on the bench">
 
 ## What you order
 

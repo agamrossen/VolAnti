@@ -6,7 +6,7 @@
 
 | File | What it is |
 |---|---|
-| `gerbers/VolAnti_revA2_gerbers.zip` | Gerber and drill set, rev A2, as sent to the fab |
+| [gerbers/VolAnti_revA2_gerbers.zip](gerbers/VolAnti_revA2_gerbers.zip) | Gerber and drill set, rev A2, straight from Flux, with per-fab BOMs inside |
 | [bom.csv](bom.csv) | Bill of materials, 36 lines, with LCSC part numbers |
 | [pick-and-place.csv](pick-and-place.csv) | Placement file for assembly |
 | [placement-bottom.jpg](placement-bottom.jpg) | The fab's placement drawing for the underside |

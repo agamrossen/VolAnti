@@ -7,7 +7,7 @@
 
 ### Open-source acoustic drone detection. It hears the propellers, not the radio.
 
-<img src="docs/images/hero.jpg" width="100%" alt="A VolAnti unit in the hand, listening">
+<img src="docs/images/hero-render.png" width="78%" alt="VolAnti unit on its mount">
 
 <br>
 
@@ -32,6 +32,8 @@ If you want the short illustrated version, or to watch the detector work on a so
 <td align="center" width="20%"><h3>£50 to £80</h3>parts for a<br>full unit</td>
 </tr>
 </table>
+
+<img src="docs/images/nine-units.jpg" width="100%" alt="Nine units on the bench, seven open, two closed">
 
 ## Contents
 
