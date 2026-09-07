@@ -1,82 +1,63 @@
-# Build guide: breadboard version
+# Building it on a breadboard
 
-The full detector, on a dev board, with no custom PCB and no printed parts. This is how VolAnti itself was developed for its first months: every algorithm in the stack was proven on exactly this setup before the PCB existed. **It runs the same firmware** (the codebase carries a `devkit` board target alongside the production `pcb_rev_a2` target), so you get the real detector, the real thresholds, the real serial console.
+The full detector on a dev board, with no custom PCB and no printed parts. This is how VolAnti was developed for its first weeks. Every algorithm in the firmware was proven on exactly this before a board was ordered, and the same image runs on both.
 
-What you give up against the full build: the enclosure's weather sealing and wind performance, the e-paper's held-with-power-off alert, the tidy alert loudness, and a few dB of consistency from fixed mic geometry. What you keep: the entire detection stack.
+What you give up against the full unit: the sealed case and its wind performance, the e-paper that holds an alert with the power off, a tidy loud beeper, and a few dB of consistency from fixed microphone geometry.
+
+<img src="images/breadboard-photo.jpg" width="100%" alt="The breadboard build wired up">
 
 ## Parts
 
-| Full build (PCB) | Breadboard equivalent | Notes |
+| Part | What to buy | Notes |
 |---|---|---|
-| ESP32-S3-WROOM-1-**N16R8** module | **ESP32-S3-DevKitC-1 N16R8** dev board | The N16R8 memory variant matters: firmware assumes 16 MB flash. Clone boards work; genuine boards from Espressif distributors avoid surprises. |
-| 4 × ICS-43434 on the board | 4 × **ICS-43434 breakout boards** | Any I2S breakout for this part. (INMP441 breakouts also work electrically but that part is end-of-life.) |
-| Waveshare 1.54″ e-paper via J3 | Same module, jumper wires | Optional on the bench; the serial console shows everything. |
-| WS2812B LED on board | Any WS2812/NeoPixel + 330 Ω series resistor | Optional. |
-| TMB12A03 beeper via driver | Same beeper + NPN (2N2222) + 1 kΩ base resistor | Optional. **Do not drive a beeper straight from a GPIO pin.** |
-| LoRa Ra-01H | Skip it | Peer alerting is a multi-unit feature; bring it up later. |
-| Battery + charger + regulator | **USB power from your computer** | Fine for detection work. If you later add beeper + motor + radio, expect brown-outs on USB alone; the firmware has a no-battery bench mode for exactly this. |
+| Controller | ESP32-S3-DevKitC-1 **N16R8** | The memory variant matters. The firmware assumes 16 MB flash. |
+| Microphones | 4 × I2S MEMS breakout, ICS-43434 or INMP441 | Any I2S breakout with SCK, WS, SD and L/R pins. |
+| Display | Waveshare 1.54 in e-paper V2, black and white | Optional on the bench. The serial console shows everything. |
+| LED | WS2812 breakout, 330 Ω, 100 µF | Optional. |
+| Beeper | 3 V active beeper, BC337 or 2N2222, 1 kΩ, 1N4148 | Optional. Never drive a beeper straight from a GPIO pin. |
+| Motor | 3 to 5 V coin vibration motor, same driver as the beeper, 470 µF | Optional. |
+| Button | 6 mm tactile switch | |
+| Power | USB-C data cable from your computer | The only supply. If you fit beeper, motor and radio together, expect brown-outs on USB alone. |
 
-Plus a breadboard, jumper wires, and a piece of stiff card.
+Plus a breadboard, male-to-male jumpers, 10 µF and 100 nF rail capacitors, and something stiff to mount the four microphones on. Skip the LoRa radio. It is a multi-unit feature and easy to add later. About £35 to £45 in total.
 
 ## Wiring
 
-All four microphones share one clock pair; they split across two data lines, two mics each, using the ICS-43434's L/R select pin to share a line.
+<img src="breadboard-schematic.png" width="100%" alt="Wiring schematic">
 
-**Clock pair (to all four mics):**
+[SVG version](breadboard-schematic.svg). The hole-by-hole layout for a Protobloc 2C board, with the rail map and the checks at every stage, is [breadboard-lab-manual-v9.pdf](breadboard-lab-manual-v9.pdf).
 
-| DevKit GPIO | Mic pin | 
-|---|---|
-| GPIO4 | SCK (bit clock), all four |
-| GPIO5 | WS (word select), all four |
+All four microphones share one clock pair. They split across two data lines, two mics each, and the L/R pin picks which slot each one drives.
 
-**Data lines and channel select:**
-
-| Mic | Position (reference) | SD → GPIO | L/R pin |
+| Mic | Position | SD to | L/R to |
 |---|---|---|---|
-| M1 | West | **GPIO6** (bus A) | **GND** |
-| M2 | East | **GPIO6** (bus A) | **3V3** |
-| M3 | North | **GPIO7** (bus B) | **GND** |
-| M4 | South | **GPIO7** (bus B) | **3V3** |
+| M1 | west | GPIO6 | GND |
+| M2 | east | GPIO6 | 3V3 |
+| M3 | north | GPIO7 | GND |
+| M4 | south | GPIO7 | 3V3 |
 
-Every mic: VDD → 3V3, GND → GND. The two mics on each data line must have opposite L/R levels, or they fight for the same slot and you get one garbled channel.
+SCK on GPIO4 and WS on GPIO5 go to all four. Every mic: VDD to 3V3, GND to GND, same orientation, port hole up and never covered.
 
-**Outputs and the button:**
+| GPIO | Function |
+|---|---|
+| 10, 11, 12, 13, 14, 15 | E-paper CS, DIN, CLK, DC, RST, BUSY. Wire by the labels on the HAT, never by wire colour. |
+| 16 | WS2812 data, through 330 Ω |
+| 17 | Beeper, through 1 kΩ to the transistor base |
+| 18 | Motor, same driver, on the 5 V rail |
+| 21 | Snooze button to GND. The pull-up is in firmware. |
 
-| DevKit GPIO | Function | Wiring |
-|---|---|---|
-| GPIO10 | e-paper CS | direct |
-| GPIO11 | e-paper DIN | direct |
-| GPIO12 | e-paper CLK | direct |
-| GPIO13 | e-paper DC | direct |
-| GPIO14 | e-paper RST | direct |
-| GPIO15 | e-paper BUSY | direct (panel drives it) |
-| GPIO16 | WS2812 data | through 330 Ω |
-| GPIO17 | Beeper | GPIO → 1 kΩ → NPN base; beeper between 3V3 and collector |
-| GPIO18 | Vibration motor | same driver pattern as the beeper, flyback diode across the motor |
-| GPIO21 | Snooze button | button to GND; internal pull-up is enabled in firmware |
-
-<!-- IMAGE: breadboard-photo.jpg: the actual dev-era breadboard rig, labelled. -->
-<!-- Schematic: hardware/schematics/ contains the breadboard wiring diagram split by subsystem. -->
-
-## Pins you must not use
-
-If you extend the build, these are off-limits on the DevKitC-1 N16R8, and two of them are traps:
-
-- **GPIO33–37**: bonded to the module's PSRAM die **even when PSRAM is disabled in software**. Using them causes intermittent corruption, not a clean failure. (Many pinout diagrams wrongly show 33–34 as free.)
-- **GPIO26–32**: SPI flash. **GPIO19/20**: native USB, your console and flashing link. **GPIO0, 3, 45, 46**: boot strapping.
-
-Free pins for your own additions: **1, 2, 8, 9, 47**.
+Leave these alone on the DevKitC-1: 0, 3, 45 and 46 (boot strapping), 19 and 20 (USB), 26 to 32 (flash), and 33 to 37, which are bonded to the PSRAM die even when PSRAM is off and fail intermittently rather than cleanly. Free for your own additions: 1, 2, 8, 9, 47.
 
 ## Geometry
 
-Tape the four breakouts to stiff card at the reference geometry: a square, 56 mm sides, ports facing up, in the M1-west / M2-east / M3-north / M4-south arrangement above. Exact spacing is not critical for detection (the array's job is noise averaging, and it is omnidirectional at drone fundamentals); matching the reference layout just keeps your numbers comparable to everyone else's.
+Mount the four breakouts on stiff card in a plus, about 56 mm across, ports up, M1 west, M2 east, M3 north, M4 south. Exact spacing does not matter for detection. It only matters that they stay put and all face the same way.
 
 ## Bring-up
 
-1. Flash the `devkit` target: [flashing.md](flashing.md).
-2. Open the serial console. Send `I`: the firmware prints the I2S pin map it was compiled with. If your wiring and that printout disagree, the printout wins.
-3. Check the boot report shows four healthy channels with quiet-RMS values in the same order of magnitude (a healthy bench reading looks like 250–420 per channel). One silent channel is almost always a swapped L/R pin or the two-mics-one-slot conflict above.
-4. **Tap test**: tap next to each mic and watch its channel respond. This catches position swaps that all electrical checks pass.
-5. Play a drone comb from a phone speaker at half a metre (any FPV flight video with clean audio, or the synthetic clips in [tools/](../tools/)) and watch the score cross the threshold on the console.
+1. Flash the `devkit` target. See [flashing.md](flashing.md).
+2. Open the serial console and send `I`. The firmware prints the pin map it was compiled with. If your wiring and that printout disagree, the printout wins.
+3. The boot report should show four healthy channels with quiet RMS values in the same order of magnitude, around 250 to 420 each on a bench. One silent channel is always a wiring fault.
+4. Tap next to each mic and watch its channel respond. This catches swapped positions that every electrical check passes.
+5. Play the clips in [test/audio](../test/audio/) from a phone at half a metre and watch the score cross 1.70 on the fast tier.
 
-From here, the [configuration](configuration.md), [test-results](test-results.md), and [expected-performance](expected-performance.md) pages all apply to your build unchanged.
+From here the unit behaves exactly like a boxed one. [Deploying](deploying.md) and [test results](test-results.md) apply unchanged.

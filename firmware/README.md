@@ -1,31 +1,23 @@
 # Firmware
 
-ESP32-S3 firmware, built with ESP-IDF. **The source is not published yet.** The directory tree below is the real one and the code lands into it at the first tagged release; the `.gitkeep` files disappear when it does.
+ESP32-S3 firmware built with ESP-IDF v6. The source lands here with the first tagged release, in this layout. Until then [docs/how-it-works.md](../docs/how-it-works.md) describes exactly what it does.
 
-Until then, [tools/](../tools/) contains the offline reference implementation of the same detector, and [docs/how-it-works.md](../docs/how-it-works.md) describes the algorithm in enough detail to reimplement it.
+    firmware/volanti/
+      main/            entry, task setup, boot self-test
+      components/
+        board/         pin maps for the two targets, PCB and DevKitC
+        front_end/     I2S capture, per-channel calibration, framing
+        combiner/      channel combination
+        back_end/      spectrum, adaptive floor, comb scoring, the four tiers
 
-```
-firmware/volanti/
-  main/                     application entry, task setup, boot self-test
-  components/
-    board/                  pin maps and the two board targets, PCB and DevKitC
-    front_end/              I2S capture, per-channel calibration, framing
-    combiner/               channel combination, an identity function at one channel
-    back_end/               spectrum, adaptive floor, comb scoring, the four tiers
-```
+## One image, two boards
 
-## Two board targets, one codebase
+The same image runs on the four-layer board and on a DevKitC breadboard build. The board target selects the pin map and nothing else. That is what lets a breadboard result mean something for a boxed unit.
 
-The same image runs on the four-layer board and on a DevKitC breadboard build. The target selects the pin map and nothing else: the detector is identical, which is what makes a breadboard result meaningful.
+## Flashing
 
-## The seam
+Toolchain, commands and the three mistakes that cost an evening: [docs/flashing.md](../docs/flashing.md).
 
-`front_end -> combiner -> back_end`, with all state in a single struct and **zero globals**. The combiner is deliberately an identity function while one summed channel is used. It exists so array processing can be inserted later without touching the detector, and so the golden vectors keep meaning when it is.
+## Sealed
 
-## What "sealed" means
-
-The tier 1 detector path is pinned by golden test vectors. A given input file must produce the same score to the last decimal place, on a laptop and on the board. It currently does, bit for bit. Any change that moves those numbers is a change to the instrument, not a refactor, and needs a measurement attached.
-
-## Building
-
-Toolchain, flashing, and the three mistakes that cost an evening: [docs/flashing.md](../docs/flashing.md).
+Tier 1 is pinned by golden test vectors. A given input file must produce the same score to the last decimal place on a laptop and on the board, and on the production board it does, bit for bit. Any change to the detection chain has to pass those unchanged, or bring new vectors and a reason.

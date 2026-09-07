@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 840" width="1300" height="840" font-family="Helvetica, Arial, sans-serif">
+<rect width="1300" height="840" fill="#FFFFFF"/>
+<text x="30" y="34" font-size="20" fill="#16181A" text-anchor="start" font-weight="700">VolAnti on a breadboard. Wiring schematic.</text>
+<text x="30" y="54" font-size="12" fill="#6B6E73" text-anchor="start" font-weight="400">ESP32-S3-DevKitC-1 N16R8, four I2S MEMS microphones, e-paper, LED, beeper, motor, snooze button. USB power only.</text>
+<rect x="60" y="90" width="250" height="620" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="70" y="112" font-size="15" font-weight="700" fill="#16181A">ESP32-S3-DevKitC-1</text>
+<text x="70" y="132" font-size="11" fill="#6B6E73">N16R8. USB-C from the computer</text>
+<text x="70" y="148" font-size="11" fill="#6B6E73">is the only supply.</text>
+<line x1="310" y1="180" x2="332" y2="180" stroke="#16181A" stroke-width="1.6"/><text x="302" y="184" font-size="12" text-anchor="end" fill="#16181A">3V3</text>
+<line x1="310" y1="205" x2="332" y2="205" stroke="#16181A" stroke-width="1.6"/><text x="302" y="209" font-size="12" text-anchor="end" fill="#16181A">GND</text>
+<line x1="310" y1="255" x2="332" y2="255" stroke="#16181A" stroke-width="1.6"/><text x="302" y="259" font-size="12" text-anchor="end" fill="#16181A">GPIO4  SCK</text>
+<line x1="310" y1="280" x2="332" y2="280" stroke="#16181A" stroke-width="1.6"/><text x="302" y="284" font-size="12" text-anchor="end" fill="#16181A">GPIO5  WS</text>
+<line x1="310" y1="305" x2="332" y2="305" stroke="#16181A" stroke-width="1.6"/><text x="302" y="309" font-size="12" text-anchor="end" fill="#16181A">GPIO6  SD A</text>
+<line x1="310" y1="330" x2="332" y2="330" stroke="#16181A" stroke-width="1.6"/><text x="302" y="334" font-size="12" text-anchor="end" fill="#16181A">GPIO7  SD B</text>
+<line x1="310" y1="380" x2="332" y2="380" stroke="#16181A" stroke-width="1.6"/><text x="302" y="384" font-size="12" text-anchor="end" fill="#16181A">GPIO10  CS</text>
+<line x1="310" y1="405" x2="332" y2="405" stroke="#16181A" stroke-width="1.6"/><text x="302" y="409" font-size="12" text-anchor="end" fill="#16181A">GPIO11  DIN</text>
+<line x1="310" y1="430" x2="332" y2="430" stroke="#16181A" stroke-width="1.6"/><text x="302" y="434" font-size="12" text-anchor="end" fill="#16181A">GPIO12  CLK</text>
+<line x1="310" y1="455" x2="332" y2="455" stroke="#16181A" stroke-width="1.6"/><text x="302" y="459" font-size="12" text-anchor="end" fill="#16181A">GPIO13  DC</text>
+<line x1="310" y1="480" x2="332" y2="480" stroke="#16181A" stroke-width="1.6"/><text x="302" y="484" font-size="12" text-anchor="end" fill="#16181A">GPIO14  RST</text>
+<line x1="310" y1="505" x2="332" y2="505" stroke="#16181A" stroke-width="1.6"/><text x="302" y="509" font-size="12" text-anchor="end" fill="#16181A">GPIO15  BUSY</text>
+<line x1="310" y1="555" x2="332" y2="555" stroke="#16181A" stroke-width="1.6"/><text x="302" y="559" font-size="12" text-anchor="end" fill="#16181A">GPIO16  LED</text>
+<line x1="310" y1="580" x2="332" y2="580" stroke="#16181A" stroke-width="1.6"/><text x="302" y="584" font-size="12" text-anchor="end" fill="#16181A">GPIO17  BEEPER</text>
+<line x1="310" y1="605" x2="332" y2="605" stroke="#16181A" stroke-width="1.6"/><text x="302" y="609" font-size="12" text-anchor="end" fill="#16181A">GPIO18  MOTOR</text>
+<line x1="310" y1="655" x2="332" y2="655" stroke="#16181A" stroke-width="1.6"/><text x="302" y="659" font-size="12" text-anchor="end" fill="#16181A">GPIO21  BUTTON</text>
+<polyline points="332,255 372,255 372,140" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<polyline points="372,140 372,524" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="372" y="112" font-size="11" fill="#16181A" text-anchor="middle" font-weight="600">SCK</text>
+<polyline points="332,280 398,280 398,140" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<polyline points="398,140 398,524" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="398" y="126" font-size="11" fill="#16181A" text-anchor="middle" font-weight="600">WS</text>
+<polyline points="332,305 424,305 424,140" fill="none" stroke="#D93A2B" stroke-width="1.6"/>
+<polyline points="424,140 424,524" fill="none" stroke="#D93A2B" stroke-width="1.6"/>
+<text x="424" y="112" font-size="11" fill="#D93A2B" text-anchor="middle" font-weight="600">SD A</text>
+<polyline points="332,330 450,330 450,140" fill="none" stroke="#D93A2B" stroke-width="1.6"/>
+<polyline points="450,140 450,524" fill="none" stroke="#D93A2B" stroke-width="1.6"/>
+<text x="450" y="126" font-size="11" fill="#D93A2B" text-anchor="middle" font-weight="600">SD B</text>
+<rect x="540" y="140" width="300" height="88" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="550" y="162" font-size="15" font-weight="700" fill="#16181A">M1  west</text>
+<text x="550" y="182" font-size="11" fill="#6B6E73">ICS-43434 or INMP441 breakout, port hole up</text>
+<text x="550" y="198" font-size="11" fill="#6B6E73">VDD to 3V3, GND to GND</text>
+<text x="550" y="214" font-size="11" fill="#6B6E73">SCK, WS on the clock pair. SD on SD A. L/R to GND</text>
+<polyline points="372,184 540,184" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<circle cx="372" cy="184" r="3.2" fill="#16181A"/>
+<polyline points="398,198 540,198" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<circle cx="398" cy="198" r="3.2" fill="#16181A"/>
+<polyline points="424,212 540,212" fill="none" stroke="#D93A2B" stroke-width="1.6"/>
+<circle cx="424" cy="212" r="3.2" fill="#D93A2B"/>
+<rect x="540" y="244" width="300" height="88" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="550" y="266" font-size="15" font-weight="700" fill="#16181A">M2  east</text>
+<text x="550" y="286" font-size="11" fill="#6B6E73">ICS-43434 or INMP441 breakout, port hole up</text>
+<text x="550" y="302" font-size="11" fill="#6B6E73">VDD to 3V3, GND to GND</text>
+<text x="550" y="318" font-size="11" fill="#6B6E73">SCK, WS on the clock pair. SD on SD A. L/R to 3V3</text>
+<polyline points="372,288 540,288" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<circle cx="372" cy="288" r="3.2" fill="#16181A"/>
+<polyline points="398,302 540,302" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<circle cx="398" cy="302" r="3.2" fill="#16181A"/>
+<polyline points="424,316 540,316" fill="none" stroke="#D93A2B" stroke-width="1.6"/>
+<circle cx="424" cy="316" r="3.2" fill="#D93A2B"/>
+<rect x="540" y="348" width="300" height="88" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="550" y="370" font-size="15" font-weight="700" fill="#16181A">M3  north</text>
+<text x="550" y="390" font-size="11" fill="#6B6E73">ICS-43434 or INMP441 breakout, port hole up</text>
+<text x="550" y="406" font-size="11" fill="#6B6E73">VDD to 3V3, GND to GND</text>
+<text x="550" y="422" font-size="11" fill="#6B6E73">SCK, WS on the clock pair. SD on SD B. L/R to GND</text>
+<polyline points="372,392 540,392" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<circle cx="372" cy="392" r="3.2" fill="#16181A"/>
+<polyline points="398,406 540,406" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<circle cx="398" cy="406" r="3.2" fill="#16181A"/>
+<polyline points="450,420 540,420" fill="none" stroke="#D93A2B" stroke-width="1.6"/>
+<circle cx="450" cy="420" r="3.2" fill="#D93A2B"/>
+<rect x="540" y="452" width="300" height="88" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="550" y="474" font-size="15" font-weight="700" fill="#16181A">M4  south</text>
+<text x="550" y="494" font-size="11" fill="#6B6E73">ICS-43434 or INMP441 breakout, port hole up</text>
+<text x="550" y="510" font-size="11" fill="#6B6E73">VDD to 3V3, GND to GND</text>
+<text x="550" y="526" font-size="11" fill="#6B6E73">SCK, WS on the clock pair. SD on SD B. L/R to 3V3</text>
+<polyline points="372,496 540,496" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<circle cx="372" cy="496" r="3.2" fill="#16181A"/>
+<polyline points="398,510 540,510" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<circle cx="398" cy="510" r="3.2" fill="#16181A"/>
+<polyline points="450,524 540,524" fill="none" stroke="#D93A2B" stroke-width="1.6"/>
+<circle cx="450" cy="524" r="3.2" fill="#D93A2B"/>
+<text x="540" y="568" font-size="11" fill="#6B6E73" text-anchor="start" font-weight="400">Two mics share each data line. The L/R pin picks the slot,</text>
+<text x="540" y="584" font-size="11" fill="#6B6E73" text-anchor="start" font-weight="400">so the two on a line need opposite levels. All four the same way up.</text>
+<rect x="890" y="140" width="370" height="150" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="900" y="162" font-size="15" font-weight="700" fill="#16181A">E-paper, Waveshare 1.54 in V2</text>
+<text x="900" y="182" font-size="11" fill="#6B6E73">8-wire cable. Wire by the labels on the HAT, never by colour.</text>
+<text x="900" y="198" font-size="11" fill="#6B6E73">Optional on the bench, the serial console shows everything.</text>
+<text x="914" y="240" font-size="11" fill="#16181A" text-anchor="middle" font-weight="700">VCC</text>
+<text x="914" y="256" font-size="10" fill="#6B6E73" text-anchor="middle" font-weight="400">3V3</text>
+<text x="958" y="240" font-size="11" fill="#16181A" text-anchor="middle" font-weight="700">GND</text>
+<text x="958" y="256" font-size="10" fill="#6B6E73" text-anchor="middle" font-weight="400">GND</text>
+<text x="1002" y="240" font-size="11" fill="#16181A" text-anchor="middle" font-weight="700">DIN</text>
+<text x="1002" y="256" font-size="10" fill="#6B6E73" text-anchor="middle" font-weight="400">GPIO11</text>
+<text x="1046" y="240" font-size="11" fill="#16181A" text-anchor="middle" font-weight="700">CLK</text>
+<text x="1046" y="256" font-size="10" fill="#6B6E73" text-anchor="middle" font-weight="400">GPIO12</text>
+<text x="1090" y="240" font-size="11" fill="#16181A" text-anchor="middle" font-weight="700">CS</text>
+<text x="1090" y="256" font-size="10" fill="#6B6E73" text-anchor="middle" font-weight="400">GPIO10</text>
+<text x="1134" y="240" font-size="11" fill="#16181A" text-anchor="middle" font-weight="700">DC</text>
+<text x="1134" y="256" font-size="10" fill="#6B6E73" text-anchor="middle" font-weight="400">GPIO13</text>
+<text x="1178" y="240" font-size="11" fill="#16181A" text-anchor="middle" font-weight="700">RST</text>
+<text x="1178" y="256" font-size="10" fill="#6B6E73" text-anchor="middle" font-weight="400">GPIO14</text>
+<text x="1222" y="240" font-size="11" fill="#16181A" text-anchor="middle" font-weight="700">BUSY</text>
+<text x="1222" y="256" font-size="10" fill="#6B6E73" text-anchor="middle" font-weight="400">GPIO15</text>
+<rect x="890" y="320" width="370" height="76" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="900" y="342" font-size="15" font-weight="700" fill="#16181A">WS2812 status LED</text>
+<text x="900" y="362" font-size="11" fill="#6B6E73">GPIO16 through 330 ohm to DIN. VCC to 3V3, GND to GND.</text>
+<text x="900" y="378" font-size="11" fill="#6B6E73">100 uF across VCC and GND at the module.</text>
+<rect x="890" y="418" width="370" height="108" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="900" y="440" font-size="15" font-weight="700" fill="#16181A">Beeper, 3 V active</text>
+<text x="900" y="460" font-size="11" fill="#6B6E73">GPIO17 to 1k to NPN base (BC337 or 2N2222), emitter to GND.</text>
+<text x="900" y="476" font-size="11" fill="#6B6E73">Beeper + to 3V3, beeper - to collector.</text>
+<text x="900" y="492" font-size="11" fill="#6B6E73">1N4148 across the beeper, band to 3V3. Never straight from a GPIO.</text>
+<rect x="890" y="548" width="370" height="108" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="900" y="570" font-size="15" font-weight="700" fill="#16181A">Vibration motor, optional</text>
+<text x="900" y="590" font-size="11" fill="#6B6E73">GPIO18 to 1k to NPN base, emitter to GND. Same driver as the beeper.</text>
+<text x="900" y="606" font-size="11" fill="#6B6E73">Motor between 5 V and collector, 1N4148 across it, 470 uF on the 5 V rail.</text>
+<text x="900" y="622" font-size="11" fill="#6B6E73">Pulses peak near 0.4 A. Use a computer port or a powered hub.</text>
+<rect x="890" y="678" width="370" height="60" rx="6" fill="none" stroke="#16181A" stroke-width="1.6"/>
+<text x="900" y="700" font-size="15" font-weight="700" fill="#16181A">Snooze button</text>
+<text x="900" y="720" font-size="11" fill="#6B6E73">GPIO21 to one leg, the diagonal leg to GND. Pull-up is in firmware.</text>
+<text x="30" y="760" font-size="11" fill="#16181A" text-anchor="start" font-weight="400">Pins to leave alone on the DevKitC-1 N16R8: 0, 3, 45, 46 (boot strapping), 19 and 20 (USB), 26 to 32 (flash), 33 to 37 (PSRAM, even with PSRAM disabled). Free: 1, 2, 8, 9, 47.</text>
+<text x="30" y="790" font-size="11" fill="#6B6E73" text-anchor="start" font-weight="400">Hole-by-hole layout for a Protobloc 2C board, with the rail map and the checks, is in breadboard-lab-manual-v9.pdf.</text>
+<text x="30" y="808" font-size="11" fill="#6B6E73" text-anchor="start" font-weight="400">Send I over the serial console and the firmware prints the pin map it was compiled with. If this drawing and that printout disagree, the printout is right.</text>
+</svg>

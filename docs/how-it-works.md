@@ -1,60 +1,61 @@
-# How VolAnti works
+# How it works
 
-This is the technical walkthrough: enough depth to judge whether the device is worth building, without reproducing the full engineering record. Every number here was measured on real hardware unless labelled otherwise.
+The device measures how strongly the sound spectrum looks like an evenly spaced comb of harmonics, and refuses to alert until that pattern has held still long enough not to be an accident. This page is the numbers behind that sentence. Every stage below runs live in [the simulator](https://volantitech.com/#simulator).
 
-## 1. The signal we hunt
+## The signal
 
-Every electric multirotor emits a **blade-pass harmonic comb**: a fundamental at `BPF = (RPM ÷ 60) × blade count`, plus copies at exact integer multiples reaching past 8 kHz. Bigger props spin slower, so 7–9″ fibre-optic-class airframes sit low: hover fundamentals around 375–475 Hz for our reference airframe (7″ three-blade props on 2807-class motors), measured at 480–570 Hz at high throttle. A three-blade prop presents **two related comb families** (shaft rate and 3× blade rate); the detector treats ×2/×3 family hops as one source, because Field-1 measured exactly that alternation on real loaded props.
+A propeller with B blades at R revolutions per second chops the air B×R times a second. That is the fundamental, f0. The chopping is not a sine, so energy lands at 2×, 3×, 4× and so on: a harmonic comb.
 
-The detector scores live audio against this physics. It never compares against recordings, so scarce, compressed combat audio is not a limitation, and any airframe sharing the physics is in scope.
+<img src="images/comb.png" width="720" alt="Measured spectrum of a loaded 7 in three-blade propeller">
 
-<!-- IMAGE: comb.png: synthetic blade-pass comb rising out of a pink-noise floor, annotated teeth vs gaps. -->
+For a three-blade propeller the detector tracks two comb families, at the 2× and 3× spacing, so a detection survives one family being masked. The predicted hover band for the airframe this was built against was 375 to 475 Hz. The first real-rotor locks landed at 423 and 471 Hz. Loaded flight sits higher, 480 to 570 Hz, which is what a propeller doing work should do.
 
-## 2. The detection stack
+## Capture
 
-Audio path: 4 microphones → coherent sum → 2048-point FFT at 16 kHz, hop 512 samples, so **one full decision every 32 ms**. Four detector tiers then run together on the production board (measured p99 frame time 29.4 ms with three heavy tiers phase-scheduled onto disjoint frames; zero frame overruns in 1,938 consecutive frames).
+| Stage | Setting |
+|---|---|
+| Microphones | 4 × ICS-43434, digital MEMS, one shared I2S clock |
+| Array | Plus pattern, 79 mm corner to corner, ±28 mm on each axis |
+| Sample rate | 16 kHz per channel |
+| Combination | The four channels are summed |
+| FFT | 2048 points, every 512 samples, so one frame every 32 ms |
+| Bin width | 7.8 Hz |
 
-| Tier | Mechanism | Catches | Latency |
-|---|---|---|---|
-| **1: fast comb** | Adaptive background floor (6 s rise) → spectral whitening → comb score 70 Hz–2 kHz (teeth minus gaps, normalised) → tracker demanding 6 consecutive in-tolerance frames | Approaching, manoeuvring, throttle-changing sources | 0.23 s |
-| **2: slow comb** | 30 s floor, priority band, 44-of-63 half-rate M-of-N tracker | Steady and loitering sources that Tier 1's fast floor absorbs after ~15 s | 1.4–2.0 s |
-| **3: envelope "wash"** | High-pass > 3 kHz → amplitude envelope → comb in the *envelope spectrum* over rotation rates 100–320 Hz | The broadband prop hiss; structurally immune to floor absorption; the only tier that caught our very first real rotor | ~1 s |
-| **4: no-floor slow comb** | 2 s Welch PSD, whitened **across frequency** by local median (no temporal floor at all), comb 110–700 Hz with ×2/×3 family logic | A drone already hovering when the unit powers on, indefinitely | 2.5–4 s |
+At the frequencies that matter, 79 mm is about a tenth of a wavelength, so the array is effectively a point. Sound from any direction adds in phase, uncorrelated capsule noise does not, and the sum gains about 6 dB of signal to noise while staying nearly omnidirectional. Measured grazing loss across the comb band was between −0.02 and +0.03 dB.
 
-The alert is the OR of the enabled tiers, with per-tier attribution in the event log. Each tier exists because a measured failure mode of the others demanded it; none is speculative.
+That measurement closed a design question. Beamforming was tried and dropped. At 79 mm the ratio of aperture to wavelength at 450 Hz is about 0.10, and steering does nothing until around 2 kHz. The sum already is the beam. The array buys sensitivity, not direction.
 
-**Why zero false alarms is architectural, not lucky.** Loud steady noise (traffic, generators, HVAC, voices at distance) raises the floor estimate, and scoring happens *relative* to the floor, so noise costs detection range rather than credibility. The trackers then require a tone to hold frequency within 2 % across consecutive frames, which drops gunshots, shouts, and door slams. Across every lab and field hour logged to date: zero false alarms. The honest confusers we have measured are close sustained speech (fires at conversational distance, disclosed to operators) and idling engines (their combs sit still while a closing drone's slides; broader tones; the tracker discriminates but this is the hardest class).
+## Floor
 
-## 3. The microphone array
+The detector keeps a running estimate of the site's normal spectrum in every bin and subtracts it. Quiet changes are learned with a 6 s time constant, so a new tone stands out for seconds. Loud broadband bursts, wind gusts, a lorry, are learned in 0.8 s, so they cannot park themselves in the model. The whitened value is capped at 2.5 so nothing can dominate.
 
-Four ICS-43434 I2S MEMS microphones in a corner square, 56.00 mm sides, **79.2 mm corner to corner**, all clocked from one source so the streams stay sample-aligned. The array's job is **quiet, not direction**: coherently summing four channels adds the drone's sound in phase while microphone self-noise adds incoherently, worth about +6 dB, roughly a doubling of range.
+The floor has a known weakness. A drone that arrives and hovers is learned into the fast floor after about 6 s and disappears from tier 1. Tiers 2 and 4 exist because of that.
 
-We measured, rather than assumed, that the array cannot beamform at the comb frequencies: 79 mm is λ/10 at 425 Hz, and measured steering gain across the comb band is −0.02 to +0.03 dB. The coherent sum already *is* the only beam this aperture has. Above ~4–5 kHz the enclosure's cone mouths become mildly directive, so mounting tilt, not electronics, is the beam. Consequence for you: **the device is effectively omnidirectional at the frequencies that matter; mount it face-up** and let body shadowing (3–6 dB at the fundamental) be the only orientation variable.
+## Score
 
-## 4. Alerts and the operator surface
+For every candidate f0 from 70 to 2000 Hz in 1 Hz steps, 1931 candidates a frame:
 
-- **Beeper** (TMB12A03) and optional **vibration motor**: unmissable at belt distance.
-- **RGB LED** through a light pipe: green blink every 2 s while guarding, solid blue in snooze, fast red in alert.
-- **Waveshare 1.54″ e-paper (200 × 200)**: LISTENING screen with uptime, alert count, enabled tiers, threshold, and per-microphone health; the alert screen **persists with the power off**, so a unit found dead still tells you what it last heard. Three read-only menu pages; roughly 30 redraws a day, so the panel lasts.
-- **One button**: tap to page through the menu while guarding; any press snoozes an active alert; long-press runs the clean shutdown ritual.
-- **Self-interference safety**: while the beeper or motor is active, the envelope-based tiers freeze their trackers, because the device's own outputs are periodic sources sitting on the same box as the microphones. This is enforced in firmware for every tier, present and future.
+    score = (energy on the comb teeth − energy in the gaps) / √K
 
-## 5. Peer alerting (LoRa)
+with K the number of teeth in band. A high score means the spectrum is combed at that spacing, not just loud. The best candidate has to win six frames in a row within 2 % before anything is allowed to happen.
 
-Ra-01H (SX1276) module, spring antenna, 868/915 MHz depending on region (**frequency is a configuration parameter; verify your local allocation**: see [configuration.md](configuration.md)). Protocol v0 is deliberately minimal: an 18-byte versioned packet, MAC-derived unit identity, all-units broadcast, no relaying. A unit that confirms a detection **puts every unit in range into full alert mode**, beeper and all, not merely a notification. The link spreads an alert; it does not vote on one. Every unit decides for itself (see [deployment.md](deployment.md)).
+## Four detectors
 
-## 6. Power
+| Tier | Floor | Band | Decision | Threshold | Latency |
+|---|---|---|---|---|---|
+| 1 Fast comb | 6 s rise, 0.8 s fall | 70 to 2000 Hz, alerts 200 to 810 Hz | 6 frame chain, family continuity across 1, 2, 3, ½, ⅓ | 1.70 | 0.23 s |
+| 2 Slow comb | 30 s | 200 to 800 Hz | 44 of 63 frames | 1.40 | 1.4 s and up |
+| 3 Envelope wash | none, whitened across frequency | modulation rate 100 to 650 Hz on the envelope above 3 kHz | 16 of 23 | 20 | 1 to 3 s |
+| 4 No-floor comb | none, 64 frame Welch median, whitened across frequency | f0 110 to 700 Hz | 5 of 8 updates | 30.5 | 5 to 15 s |
 
-USB-C in → BQ24074 power-path charger → protected 1S LiPo → TPS63020 buck-boost → 3.3 V rail. The unit runs while charging and guards from power-on in about 2 seconds with zero interaction.
+Tier 1 catches arrivals and changes. Tier 2 catches an arrival that then hovers, because its floor has not caught up. Tier 3 catches loaded, close, high thrust flight, where the giveaway is a roar modulated above 3 kHz rather than a clean comb. Tier 4 catches a long hover in a place that never goes quiet, because nothing is ever learned into a floor. It is the most sensitive and the slowest, and it is the one that fired at 104 m.
 
-**The battery is mandatory even on mains power.** Measured on the production board: the alert load (beeper + motor + LoRa transmit simultaneously) browns out a USB-only supply. The cell is the rail's surge buffer, not just backup. Runtime on the 2500 mAh reference cell: ~18–22 h at typical guard draw.
+The alert is the first tier to be sure. Outputs hold for 5 s with a countdown on the screen, and the slow accumulators freeze while the outputs are active so the unit's own beeper cannot feed the detector.
 
-## 7. Honest limits
+## Why the thresholds are low
 
-- **Wind is the binding constraint.** Above ~5 m/s, upwind sound can lose 20 dB before it arrives; no array recovers that. Windscreen cloth over the mic ports is the cheapest range purchase available and is part of the standard build.
-- **Quiet-by-design aircraft defeat the method outright.**
-- **No bearing.** The device tells you something is coming, not from where.
-- **Friend or foe is indistinguishable.** Your own drone triggers it.
-- **This is a short-range early-warning aid.** Seconds of warning, not minutes. Plan around that.
+For this use a missed aircraft costs far more than a false beep. So the thresholds sit low and the false alarm defence is the trackers: a real, stable, physically plausible rotor rate that persists. That rejects noise better than a high threshold does, because a high threshold also rejects quiet real drones.
 
-For measured performance under stated conditions, see [test-results.md](test-results.md) and [expected-performance.md](expected-performance.md).
+## Sealed
+
+Tier 1 is pinned by golden test vectors. A given input file must produce the same score to the last decimal place on a laptop and on the board, and on the production PCB it does, bit for bit. No future change can move it silently.

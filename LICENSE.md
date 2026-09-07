@@ -1,18 +1,19 @@
-# Licensing
+# Licence
 
-VolAnti uses three licenses, one per domain. This is deliberate: a single license fits none of the three kinds of work in this repository well.
+| What | Licence | Text |
+|---|---|---|
+| Hardware: PCB design, enclosure, bill of materials | CERN-OHL-W-2.0 | [LICENSES/CERN-OHL-W-2.0.txt](LICENSES/CERN-OHL-W-2.0.txt) |
+| Firmware and software | Apache-2.0 | [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| Documentation, photographs, videos, the website | CC BY-SA 4.0 | [LICENSES/CC-BY-SA-4.0.txt](LICENSES/CC-BY-SA-4.0.txt) |
 
-| Domain | Paths | License | Why |
-|---|---|---|---|
-| **Hardware** | `hardware/` | [CERN-OHL-W-2.0](LICENSES/CERN-OHL-W-2.0.txt) | The weakly-reciprocal open-hardware license. Modified board or enclosure designs must be shared back, but products that merely *incorporate* the design are not captured. This keeps derivatives open without blocking someone from, say, integrating the array into a larger system. |
-| **Firmware & software** | `firmware/`, `tools/` | [Apache-2.0](LICENSES/Apache-2.0.txt) | Permissive with an explicit patent grant. Maximum reuse of the detector algorithms, and the patent clause protects builders. |
-| **Documentation & media** | `docs/`, `*.md`, images | [CC-BY-SA-4.0](LICENSES/CC-BY-SA-4.0.txt) | Translations and adapted guides must stay open and credit the source. Translation is one of the highest-value contributions this project can receive. |
+You can build it, sell it, change it and fork it. Keep the notices, share hardware changes under the same licence, and credit the source.
 
-## Practical answers
+## Disclaimer
 
-- **Can I sell assembled units?** Yes, under all three licenses. If you modify the hardware design, publish your changes (CERN-OHL-W). You may not imply certification or endorsement that does not exist, and you carry the [DISCLAIMER](DISCLAIMER.md) obligations to your customers.
-- **Can I use the detector code in a closed product?** Yes (Apache-2.0). Attribution required.
-- **Can I translate the docs?** Please do. CC-BY-SA: credit the project, share alike.
-- **Trademark:** "VolAnti" is the name of this project. Use it to refer to unmodified builds; call forks something else so build reports stay meaningful.
+VolAnti is a detection and alert device. It is not a life-safety product and has been through no safety, EMC or reliability certification. It will miss aircraft, it cannot tell whose aircraft it is, and its range collapses in wind. It must never be the only thing between people and harm. The authors accept no liability for its use.
 
-OSHWA self-certification (open-source hardware certification mark) is planned once the repository reaches its first tagged release.
+It will never include jamming, spoofing, interception, targeting or any countermeasure. Forks that add one may not use the VolAnti name.
+
+## Citing
+
+If this work is useful in a report or a paper, [CITATION.cff](CITATION.cff) carries the reference. Please cite the repository and the website.

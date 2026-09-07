@@ -7,7 +7,7 @@ authors:
     given-names: Agam
     affiliation: "University of York, Department of Electronic Engineering"
 repository-code: "https://github.com/agamrossen/VolAnti"
-url: "https://agamrossen.github.io/VolAnti/"
+url: "https://volantitech.com"
 abstract: >-
   VolAnti detects small multirotor aircraft acoustically, by tracking the
   harmonic comb produced by spinning propellers, rather than by listening for a
