@@ -1,0 +1,14 @@
+main/generated/
+# clangd index, editor-local
+.cache/
+build/
+sdkconfig
+sdkconfig.old
+managed_components/
+dependencies.lock
+# Bench evidence is local by default: raw 4-channel PCM runs ~128 kB/s, so a
+# 90 s capture is ~11 MB and the tree would bloat fast.
+# EXCEPTION, deliberate: a capture that a COMMITTED document cites as its
+# evidence gets force-added (`git add -f`), so a fresh clone can check the
+# claim. Keep raw audio OUT.
+captures/

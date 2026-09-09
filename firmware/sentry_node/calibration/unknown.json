@@ -1,0 +1,38 @@
+{
+  "board_mac": "unknown",
+  "channel_baseline": {
+    "dc": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "measured": "2026-08-13T13:07:04",
+    "rms": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "timeouts": [
+      0,
+      50
+    ]
+  },
+  "created": "2026-08-13T12:02:40+00:00",
+  "led_wire_order": {
+    "0,0,255": "blue",
+    "0,255,0": "red",
+    "255,0,0": "green"
+  },
+  "peripherals": {
+    "button": false,
+    "buzzer": true,
+    "epaper": false,
+    "led_white_ok": true,
+    "motor": true
+  },
+  "schema": "sentry-node/calibration-profile/1",
+  "sessions": [],
+  "updated": "2026-08-13T12:07:04+00:00"
+}

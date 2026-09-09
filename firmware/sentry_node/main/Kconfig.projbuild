@@ -1,0 +1,47 @@
+menu "SENTRY-Node board"
+
+# ---------------------------------------------------------------------------
+# The board target.
+#
+# One codebase, two targets. The DevKit is the default and must stay the
+# default: every gate, runbook and measurement in this repository was taken on
+# that board, so a build whose meaning changed the day this menu arrived would
+# invalidate all of them at once.
+#
+# Selecting a board changes ONE thing - which header boards/ hands to
+# board_pins.h. It does not change a detector constant, a threshold, a tier
+# default or a frame budget, and the no-regression certificate asserts as much
+# by proving the DevKit image still passes the golden gate.
+# ---------------------------------------------------------------------------
+choice SENTRY_BOARD
+    prompt "Target board"
+    default SENTRY_BOARD_DEVKIT
+    help
+      Which physical board this image is for. Affects only the pin map and
+      the BOARD_HAS_* capability flags in main/boards/; nothing in the
+      detection path reads either.
+
+config SENTRY_BOARD_DEVKIT
+    bool "ESP32-S3-DevKitC-1 on the breadboard (the proven build)"
+    help
+      The board every measurement in this project was taken on. Four INMP441
+      microphones, e-paper, WS2812, buzzer, motor and a snooze button, wired
+      on a breadboard. No battery telemetry, no charger, no radio, no slide
+      switch. Geometry profile: breadboard_plus_v1 (plus/cross, 40.64 x
+      60.96 mm).
+
+config SENTRY_BOARD_PCB_A2
+    bool "SENTRY-Node PCB rev A2"
+    help
+      The custom board. Reuses the DevKit's fourteen proven GPIO numbers
+      exactly - zero firmware change - and adds a VBAT sense
+      divider, a BQ24074-class charger STAT line, an Ai-Thinker Ra-01H
+      (SX1276) LoRa module on the e-paper's SPI2 bus, and a slide switch that
+      gates the regulator enable. Geometry profile: pcb_rev_a2 (corner
+      square, 56 mm sides).
+
+      Every hardware acceptance for this target is owed.
+
+endchoice
+
+endmenu

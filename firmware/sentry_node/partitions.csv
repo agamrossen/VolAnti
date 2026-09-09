@@ -1,0 +1,12 @@
+# Stage 1a golden-vector replay image.
+#
+# The three golden vectors are 128000 + 470784 + 120576 = 719360 int16 samples
+# = 1,438,720 bytes of const data, plus ~0.47 MB of precomputed comb tables.
+# That does not fit the default 1M factory partition, so the app gets 8M of the
+# 16MB flash. Sizes are the ESP-IDF defaults for nvs/phy_init; only the app
+# partition is enlarged.
+#
+# Name,   Type, SubType, Offset,  Size
+nvs,      data, nvs,     0x9000,  0x6000
+phy_init, data, phy,     0xf000,  0x1000
+factory,  app,  factory, 0x10000, 0x800000

@@ -1,0 +1,38 @@
+# =========================================================================
+# The PCB rev A2 build target.
+#
+#   idf.py -B build_pcb_a2 -DSDKCONFIG=build_pcb_a2/sdkconfig \
+#          -DSDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.pcb_a2" build
+#
+# -DSDKCONFIG is not optional. `idf.py -B <dir>` gives
+# the variant its own BUILD directory but NOT its own sdkconfig: that still
+# defaults to <project>/sdkconfig, which the DevKit build also uses. So the
+# first PCB build wrote CONFIG_SENTRY_BOARD_PCB_A2=y into the shared file, and
+# every subsequent plain `idf.py build` silently produced a PCB image while
+# calling itself the DevKit build. It was caught by a DIRAM figure that would
+# not move when a guard that should have removed 2.3 KB was added - the
+# measurement disagreed with the code, and the code was right.
+#
+# It is the exact failure this brief is about: two targets, one truth, and the
+# one thing that must never happen is the wrong one being built silently. The
+# defence is three-deep now. This flag, so the files cannot be shared; the
+# `board=` line `I` prints, so a running device says which it is; and the
+# no-regression certificate, which reads the board name back out of the built
+# image and records it.
+#
+# Layered on top of sdkconfig.defaults, never instead of it, and built into
+# its OWN directory - the sdkconfig.psram precedent, for the same reason. The
+# DevKit target must keep producing exactly what `idf.py build` has always
+# produced, and it cannot do that if a second target shares its build tree.
+#
+# THIS FILE SELECTS ONE THING: which header main/board_pins.h dispatches to.
+# It sets no detector constant, no threshold, no tier default and no frame
+# budget. Everything else - QIO, the partition table, 240 MHz, the float
+# semantics, PSRAM off - comes from sdkconfig.defaults, which is FROZEN and
+# is not edited here.
+#
+# Every hardware acceptance for this target is owed: it compiles, and that is
+# the whole of the evidence.
+# =========================================================================
+CONFIG_SENTRY_BOARD_DEVKIT=n
+CONFIG_SENTRY_BOARD_PCB_A2=y

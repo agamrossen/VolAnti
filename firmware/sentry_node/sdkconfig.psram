@@ -1,0 +1,40 @@
+# =========================================================================
+# Build variant only - NOT the shipped configuration.
+#
+#   idf.py -B build_psram \
+#          -DSDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.psram" build
+#
+# sdkconfig.defaults is FROZEN and says "PSRAM stays OFF". This file does not
+# edit it; it is layered on top for an experiment, which is why it lives in a
+# separate build directory. Nothing in the shipped path may ever depend on it.
+#
+# WHAT IT IS FOR. The module is an N16R8: 8 MB of octal PSRAM, bonded and
+# unused. It would fund capture rings, event history and logging - none of
+# which are on the hot path. It must therefore cost the hot path NOTHING, and
+# "nothing" is a measurement, not a hope.
+#
+# THE RULE THE EXPERIMENT RESTS ON: every hot-path buffer stays in INTERNAL
+# RAM. The code already asks for that explicitly - every allocation in the
+# guard, in Tier-2, Tier-3 and Tier-4 passes MALLOC_CAP_INTERNAL - so enabling
+# PSRAM cannot silently move a frame buffer onto a slower bus. I2S DMA
+# descriptors must be internal too, and the driver enforces that itself.
+#
+# WHAT MUST BE MEASURED BEFORE THIS IS EVER MORE THAN AN EXPERIMENT
+# (none of it has been - the board was not attached the night it was written):
+#   1. F1 golden gate, all four vectors, zero decision mismatches
+#   2. `Z` quad parity
+#   3. F3 real time, all three tiers armed, p99 inside 32 ms
+#   4. the 90 s unread-link soak
+# If p99 moves by more than 0.5 ms, or any gate degrades, revert and record
+# the number. The finding is the deliverable either way.
+# =========================================================================
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_TYPE_AUTO=y
+CONFIG_SPIRAM_SPEED_80M=y
+
+# Do NOT let the allocator hand PSRAM to a plain malloc(). Anything that wants
+# it must ask by capability, which means an accidental hot-path allocation
+# lands in internal RAM and stays fast rather than becoming a mystery.
+CONFIG_SPIRAM_USE_MALLOC=n
+CONFIG_SPIRAM_USE_CAPS_ALLOC=y

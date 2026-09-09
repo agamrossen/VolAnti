@@ -1,0 +1,67 @@
+# --- target ---------------------------------------------------------------
+# Pinned here, not left to `idf.py set-target`. Deleting build/ and
+# sdkconfig otherwise silently falls back to plain esp32 and the link
+# fails on the S3-only drivers - which is how this line came to exist.
+CONFIG_IDF_TARGET="esp32s3"
+
+# --- flash geometry -------------------------------------------------------
+CONFIG_ESPTOOLPY_FLASHSIZE_2MB=n
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ESPTOOLPY_FLASHSIZE="16MB"
+
+# QIO, not DIO. The comb score is FLASH-BANDWIDTH BOUND, not arithmetic bound:
+# it streams the whole gather table from flash every frame. Measured on-device,
+# 4-bit QIO at the same 80 MHz clock cut that stage from 30.5 to 19.5 ms - the
+# single largest speedup available, from a config line with no algorithmic
+# change. Safe on this ESP32-S3-DevKitC-1 N16R8: its 16 MB die is a standard
+# quad-SPI part with IO2/IO3 already bonded on the module (which is why
+# GPIO 26-32 are unusable), and the mode lives in the image header, not in
+# efuses, so reflashing reverts it. 80 MHz is kept - 120 MHz is experimental
+# on the S3 and buys nothing that is worth an unproven flash timing.
+#
+# Do NOT "fix" the fact that the built image header still says dio. ESP-IDF
+# sets that on purpose (Kconfig: `default "dio" if ESPTOOLPY_FLASHMODE_QIO`):
+# the ROM bootloader reads the header in the safest 2-bit mode, and the
+# second-stage bootloader promotes the flash to QIO at runtime from the symbol
+# below. The 30.5 -> 19.5 ms measurement is the proof that it takes effect.
+CONFIG_ESPTOOLPY_FLASHMODE_DIO=n
+CONFIG_ESPTOOLPY_FLASHMODE_QIO=y
+CONFIG_ESPTOOLPY_FLASHFREQ_80M=y
+CONFIG_ESPTOOLPY_FLASHFREQ="80m"
+
+# --- custom partition table -----------------------------------------------
+# 8M factory app: the golden vectors (1.41 MB) + comb tables (~0.47 MB) do not
+# fit the default 1M factory partition.
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"
+
+# --- PSRAM stays OFF ------------------------------------------------------
+# Everything large is flash-resident const (.rodata). Nothing needs PSRAM, and
+# leaving it off keeps GPIO 33-37 free and the memory map simple.
+CONFIG_SPIRAM=n
+
+# --- serial trace link ----------------------------------------------------
+# The trace is a binary struct stream. USB-Serial-JTAG is the DevKitC-1 native
+# link. A large TX buffer keeps the detector from blocking on the UART.
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+CONFIG_ESP_CONSOLE_SECONDARY_NONE=y
+
+# --- determinism ----------------------------------------------------------
+# Run at the documented 240 MHz so the measured cycle budget means what it
+# is quoted as (7.68 M cycles per 32 ms hop).
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ=240
+
+# Watchdogs off for the replay: a vector is processed in one uninterrupted
+# loop and must not be pre-empted or reset mid-trace.
+CONFIG_ESP_TASK_WDT_INIT=n
+CONFIG_ESP_INT_WDT=n
+
+# Larger main task stack; the detector keeps its frame buffers on the stack of
+# whichever task calls it.
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=16384
+
+# Compiler: optimise for speed, but keep strict float semantics so the C
+# expression order in detector.c is the order actually executed.
+CONFIG_COMPILER_OPTIMIZATION_PERF=y
