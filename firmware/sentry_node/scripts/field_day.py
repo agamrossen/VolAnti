@@ -5,7 +5,7 @@ report. Staged, resumable, per-board, and it does its own measuring, judging
 and bookkeeping.
 
     conda activate acoustic-detector
-    cd ~/acoustic-detector/firmware/sentry_node
+    cd firmware/sentry_node
 
     python scripts/field_day.py                 # the full staged run
     python scripts/field_day.py --quick         # S0-S3 health check, ~2 min

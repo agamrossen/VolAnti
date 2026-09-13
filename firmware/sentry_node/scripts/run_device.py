@@ -3,7 +3,7 @@
 run_device.py - RUN THE WHOLE DEVICE. One command, Ctrl-C to stop.
 
     conda activate acoustic-detector
-    cd ~/acoustic-detector/firmware/sentry_node
+    cd firmware/sentry_node
     python scripts/run_device.py
 
 This is not a test of a part. It is the device behaving as a device: four

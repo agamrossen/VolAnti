@@ -4,7 +4,7 @@ family_field_analysis.py - the family {2,3} rule's field verdict,
 pre-committed.
 
     conda activate acoustic-detector
-    cd ~/acoustic-detector/firmware/sentry_node
+    cd firmware/sentry_node
 
     python scripts/family_field_analysis.py                  # today's session
     python scripts/family_field_analysis.py captures/<session>

@@ -24,8 +24,13 @@
  *
  * Selecting a target:
  *
- *     idf.py menuconfig   ->  SENTRY-Node board  ->  ESP32-S3-DevKitC-1 ...
- *     idf.py -DSENTRY_BOARD_PCB_A2=y build
+ *     idf.py build                      the DevKit, which is the default
+ *     idf.py -B build_pcb_a2 -DSDKCONFIG=build_pcb_a2/sdkconfig
+ *            -DSDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.pcb_a2" build
+ *
+ * The board is a Kconfig choice, so it has to come from an sdkconfig file. A
+ * plain -D on the idf.py command line does not reach it. See sdkconfig.pcb_a2
+ * and docs/flashing.md.
  *
  * The default is the DevKit, deliberately: every workflow, runbook, gate and
  * measurement in this repository was taken on that board, and a seam whose

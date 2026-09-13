@@ -3,7 +3,7 @@
 field_verdict.py - the day's answers, in minutes, in the order they matter.
 
     conda activate acoustic-detector
-    cd ~/acoustic-detector/firmware/sentry_node
+    cd firmware/sentry_node
     python scripts/field_verdict.py                 # today's session
     python scripts/field_verdict.py captures/<session>
     python scripts/field_verdict.py --no-cache

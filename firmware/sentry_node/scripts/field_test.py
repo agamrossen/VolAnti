@@ -3,7 +3,7 @@
 field_test.py - THE SIMPLE ONE. It tells you what to do; you do it.
 
     conda activate acoustic-detector
-    cd ~/acoustic-detector/firmware/sentry_node
+    cd firmware/sentry_node
     python scripts/field_test.py
 
 No configuration questions, no y/n checklists. It checks the hardware itself,

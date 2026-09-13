@@ -41,9 +41,9 @@ If you want the short illustrated version, or to watch the detector work on a so
 
 **Build it**: [Two ways to build it](#two-ways-to-build-it) · [Breadboard guide](docs/breadboard-build.md) · [Full unit guide](docs/pcb-build.md) · [Flashing](docs/flashing.md) · [Running several units](#running-several-units)
 
-**Everything else**: [Photos and videos](docs/gallery.md) · [Test results](docs/test-results.md) · [Deploying](docs/deploying.md) · [Contributing](#contributing) · [Scope](#scope) · [Licence](#licence)
+**Everything else**: [Photos and videos](docs/gallery.md) · [Test results](docs/test-results.md) · [Deploying](docs/deploying.md) · [Contributing](#contributing) · [Scope](#scope) · [Licence](#licence) · [A note from Agam](#a-note-from-agam)
 
-**Files**: [firmware](firmware/) · [PCB, BOM and placement](hardware/pcb/) · [printable enclosure](hardware/enclosure/) · [test audio](test/) · [website source](index.html)
+**Files**: [firmware](firmware/) · [reference detector](src/) · [PCB, BOM and placement](hardware/pcb/) · [printable enclosure](hardware/enclosure/) · [test audio](test/) · [website source](index.html)
 
 ---
 
@@ -68,7 +68,7 @@ When one of them says yes, five things happen at once.
 | Channel | What happens |
 |---|---|
 | Beeper | Loud and patterned. The one that carries through a wall. |
-| LED | Solid red through the light pipe in the lid. |
+| LED | Fast flashing red through the light pipe in the lid. |
 | Motor | A haptic pulse for whoever is holding it. |
 | E-paper | The alert and the time, and it stays on the screen with no power. |
 | LoRa | An 18 byte packet to every other unit in range. |
@@ -182,6 +182,21 @@ VolAnti detects and alerts. It will never include jamming, spoofing, interceptio
 ## Licence
 
 Hardware under CERN-OHL-W-2.0, firmware under Apache-2.0, documentation under CC BY-SA 4.0. Full texts in [LICENSES/](LICENSES/), the short version and the disclaimer in [LICENSE.md](LICENSE.md). Not a life-safety product. It will miss aircraft.
+
+## A note from Agam
+
+Hello, and thank you for taking an interest in VolAnti. If you have questions about the breadboard build, the hardware or the firmware, open an issue and I will be happy to help.
+
+A few things worth knowing before you build and test one:
+
+- **The software has the most room for improvement.** I wrote the firmware in one month while building the hardware at the same time, and parts of it show that.
+- **It was made for outdoors.** Outside it has coped well with wind, traffic, people and generators. Indoors it has raised false alarms a number of times on certain music, propeller recordings and loud fan-like sounds. I believe this comes from the sensitivity of tiers 1 and 4, which triggered indoors the most.
+- **By my calculations the hardware is capable of more than the firmware gets out of it**, in how early and how far away it can detect a drone. Most of the tuning used synthetic audio and a small number of real recordings, so recordings of real drones and real background noise, from other places and in other weather, are the most useful thing for improving both range and false alarms.
+- **The LED has misbehaved on some flashed units**, sometimes staying lit the whole time the device was on and sometimes flashing red at boot. I believe it is a software fault and have not had time to track it down.
+
+VolAnti does not care about politics, where you are from or what you look like. It exists to protect people's lives and the lives of those around them. That is why it is not sold, why it was never made for or with any military, and why it is open source: the small towns and communities these drones attack are often the ones left unprotected, and anyone who could benefit from one should be able to build it. A few units are being deployed at a civilian site in Israel as a deployment test, as an extra layer of protection for the residents rather than something to rely on alone. Beyond that, I hope people build their own and improve it, especially the firmware, so it can reach people anywhere without waiting on shipping.
+
+If you build one or test it in the field, I would love to see photos of it being made, tested or used. Leave out anything that shows where a unit is deployed. It would genuinely make my day, and it helps my portfolio for academic applications.
 
 ---
 

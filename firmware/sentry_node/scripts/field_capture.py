@@ -3,7 +3,7 @@
 field_capture.py - ONE stage, ONE command, and the samples always survive.
 
     conda activate acoustic-detector
-    cd ~/acoustic-detector/firmware/sentry_node
+    cd firmware/sentry_node
 
     python scripts/field_capture.py --selftest
     python scripts/field_capture.py --stage quiet_baseline --seconds 600

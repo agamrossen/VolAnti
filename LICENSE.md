@@ -12,6 +12,8 @@ You can build it, sell it, change it and fork it. Keep the notices, share hardwa
 
 VolAnti is a detection and alert device. It is not a life-safety product and has been through no safety, EMC or reliability certification. It will miss aircraft, it cannot tell whose aircraft it is, and its range collapses in wind. It must never be the only thing between people and harm. The authors accept no liability for its use.
 
+The firmware was written in a month alongside the hardware and is the least mature part of the project. It has raised false alarms indoors on some music, propeller recordings and fan-like noise, and some units have shown LED faults. The [note at the end of the README](README.md#a-note-from-agam) has more.
+
 It will never include jamming, spoofing, interception, targeting or any countermeasure. Forks that add one may not use the VolAnti name.
 
 ## Citing
