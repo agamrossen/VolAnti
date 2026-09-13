@@ -1,0 +1,146 @@
+{
+  "schema": "acoustic-detector/device_config/1",
+  "site": "rural",
+  "corpus_tag": "rural-v1",
+  "default_preset": "HIGH_ALERT",
+  "presets": {
+    "NORMAL": {
+      "threshold": 2.14,
+      "off_prio": 0.0,
+      "off_gen": 0.0
+    },
+    "HIGH_ALERT": {
+      "threshold": 1.7,
+      "off_prio": 0.0,
+      "off_gen": 0.0
+    }
+  },
+  "budgets_weighted_fa_per_hour_nongust": {
+    "NORMAL": 1.0,
+    "HIGH_ALERT": 4.0
+  },
+  "detector": {
+    "fs": 16000,
+    "n_fft": 2048,
+    "hop": 512,
+    "f_search_lo": 70.0,
+    "f_search_hi": 2000.0,
+    "f_step": 1.0,
+    "f_alert_lo": 200.0,
+    "f_alert_hi": 2000.0,
+    "f_prio_lo": 200.0,
+    "f_prio_hi": 800.0,
+    "thr_off_prio": 0.0,
+    "thr_off_gen": 0.0,
+    "n_harm_max": 12,
+    "n_harm_min": 4,
+    "f_max_harm": 7800.0,
+    "floor_mode": "tonality",
+    "tau_rise_s": 6.0,
+    "tau_fall_s": 0.8,
+    "tau_rise_fast_s": 1.5,
+    "tau_energy_s": 4.0,
+    "gate_ratio": 1.35,
+    "flat_hi": 0.7,
+    "minstat_frames": 48,
+    "minstat_sub": 4,
+    "minstat_bias": 5.5,
+    "sat_log": 2.5,
+    "hold_mode": "off",
+    "hold_chain_min": 2,
+    "hold_frac": 0.6,
+    "hold_persist": 3,
+    "hold_release_s": 0.5,
+    "hold_w_bins": 1,
+    "hold_max_bins": 64,
+    "reanchor": false,
+    "reanchor_margin": 0.15,
+    "reanchor_min_tooth": 0.7,
+    "reanchor_depth": 2,
+    "min_teeth": 0,
+    "teeth_level": 0.5,
+    "max_jitter": 0.004,
+    "veto_voice": false,
+    "veto_f0_min_hz": 250.0,
+    "veto_min_teeth": 11,
+    "nf_gate": false,
+    "nf_score_hi": 2.0,
+    "nf_r_min_db": -15.0,
+    "nf_max_jitter": 0.05,
+    "r_lo_b0": 16,
+    "r_lo_b1": 128,
+    "r_hi_b0": 410,
+    "t_warmup_s": 1.0,
+    "track_need": 6,
+    "track_miss": 2,
+    "cont_frac": 0.02,
+    "cont_min_hz": 12.0,
+    "trk_v2": false,
+    "trk_v2_cont_frac": 0.25,
+    "trk_v2_track_miss": 1,
+    "trk_v2_tau_s": 1.0,
+    "trk_v2_alpha": 0.9685065820791976,
+    "trk_v2_cluster_span": 0.25,
+    "trk_v2_cluster_frac": 0.7
+  },
+  "committed_overrides": {
+    "floor_mode": "tonality",
+    "tau_rise_fast_s": 1.5,
+    "flat_hi": 0.7,
+    "reanchor": false,
+    "min_teeth": 0,
+    "max_jitter": 0.004
+  },
+  "disabled_features": {
+    "hold_mode": {
+      "value": "off",
+      "why": "comb-hold. Set to 'chain' or 'cand' only with new measurements."
+    },
+    "reanchor": {
+      "value": false,
+      "why": "subharmonic re-anchoring: measured zero change in FA and P(d); frame-level octave slip rose 16.9%->17.8%."
+    },
+    "min_teeth": {
+      "value": 0,
+      "why": "harmonic-extent gate: no separation against livestock, which saturates at 12/12 supported teeth exactly as drones do. That is why it is off. It is not a general result: a piano is inharmonic (stiff string, partials at n*f0*sqrt(1+B*n^2)) and measures 8/11/12 teeth at p10/median/p90 where every drone class measures 12/12/12, so the same gate at 11 is the veto's second term. Rejected against the wrong adversary; see veto_voice."
+    },
+    "veto_voice": {
+      "value": false,
+      "why": "the voice and struck-note veto, calibrated against synthetic piano and held-vowel families. Recalibrated and paired over 486 positives it is 0 lost / 92 gained, McNemar p < 0.0001, and it removes a held vowel entirely."
+    },
+    "thr_off_prio": {
+      "value": 0.0,
+      "why": "two-tier band offset: measured no effect - the threat and the binding confuser both sit in the priority band, so any offset is cancelled by threshold recalibration."
+    }
+  },
+  "frame": {
+    "fs_hz": 16000,
+    "n_fft": 2048,
+    "hop": 512,
+    "frame_period_s": 0.032,
+    "n_bins": 1025,
+    "bin_width_hz": 7.8125,
+    "cycles_at_240mhz": 7680000.0
+  },
+  "golden_vectors": [
+    "golden_strong_pos",
+    "golden_marginal_neg",
+    "golden_marginal_pos"
+  ],
+  "trace_fields": [
+    "frame",
+    "t_s",
+    "score",
+    "f0_bin",
+    "f0_hz",
+    "f0_raw_hz",
+    "teeth",
+    "floor_fast",
+    "reanch",
+    "n_held_bins",
+    "above_thr",
+    "cont_accepted",
+    "chain",
+    "fired"
+  ]
+}

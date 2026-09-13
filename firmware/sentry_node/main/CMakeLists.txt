@@ -110,25 +110,44 @@ set(GEN_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 set(PROJ_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 get_filename_component(REPO_DIR ${PROJ_DIR}/../.. ABSOLUTE)
 
-find_program(SENTRY_CONDA conda
-             HINTS /opt/homebrew/Caskroom/miniforge/base/bin
-                   $ENV{HOME}/miniforge3/bin $ENV{HOME}/miniconda3/bin
-                   /opt/homebrew/bin /usr/local/bin)
-if(NOT SENTRY_CONDA)
-    message(FATAL_ERROR "conda not found; the generated headers cannot be "
-                        "built from the sealed Stage-0 artifacts")
+# The generator needs a Python interpreter with numpy. SENTRY_PYTHON, given
+# as -DSENTRY_PYTHON=<path> or set in the environment, names one directly.
+# Without it the build uses the conda environment created from
+# environment.yml at the repository root.
+if(DEFINED ENV{SENTRY_PYTHON})
+    set(SENTRY_PYTHON "$ENV{SENTRY_PYTHON}" CACHE FILEPATH
+        "Python with numpy for scripts/gen_headers.py" FORCE)
 endif()
 
-# Call the env's interpreter DIRECTLY, never `conda run ... python`. Under
-# `eim run` the ESP-IDF venv is already on PATH, and `conda run` resolves the
-# bare name `python` against it - so the generator ran under the IDF
-# interpreter and died on `import numpy`. The env python is derived from
-# conda's own location, so this stays correct wherever conda is installed.
-get_filename_component(SENTRY_CONDA_BIN ${SENTRY_CONDA} DIRECTORY)
-set(SENTRY_PY ${SENTRY_CONDA_BIN}/../envs/acoustic-detector/bin/python)
-if(NOT EXISTS ${SENTRY_PY})
-    message(FATAL_ERROR "conda env 'acoustic-detector' python not found at "
-                        "${SENTRY_PY}")
+if(SENTRY_PYTHON)
+    set(SENTRY_PY ${SENTRY_PYTHON})
+    if(NOT EXISTS ${SENTRY_PY})
+        message(FATAL_ERROR "SENTRY_PYTHON is set to ${SENTRY_PY}, which does "
+                            "not exist")
+    endif()
+else()
+    find_program(SENTRY_CONDA conda
+                 HINTS /opt/homebrew/Caskroom/miniforge/base/bin
+                       $ENV{HOME}/miniforge3/bin $ENV{HOME}/miniconda3/bin
+                       /opt/homebrew/bin /usr/local/bin)
+    if(NOT SENTRY_CONDA)
+        message(FATAL_ERROR "conda not found. Create the environment from "
+                            "environment.yml, or set SENTRY_PYTHON to a "
+                            "Python with numpy")
+    endif()
+
+    # Call the env's interpreter DIRECTLY, never `conda run ... python`. Under
+    # `eim run` the ESP-IDF venv is already on PATH, and `conda run` resolves the
+    # bare name `python` against it - so the generator ran under the IDF
+    # interpreter and died on `import numpy`. The env python is derived from
+    # conda's own location, so this stays correct wherever conda is installed.
+    get_filename_component(SENTRY_CONDA_BIN ${SENTRY_CONDA} DIRECTORY)
+    set(SENTRY_PY ${SENTRY_CONDA_BIN}/../envs/acoustic-detector/bin/python)
+    if(NOT EXISTS ${SENTRY_PY})
+        message(FATAL_ERROR "conda env 'acoustic-detector' python not found at "
+                            "${SENTRY_PY}. Create it with `conda env create -f "
+                            "environment.yml`, or set SENTRY_PYTHON")
+    endif()
 endif()
 
 set(GEN_HEADERS

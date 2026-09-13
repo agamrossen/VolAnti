@@ -1,0 +1,55 @@
+{
+ "corpus_tag": "t4-v1",
+ "enabled_default": false,
+ "why_disabled": "Calibrated against real drone-free audio: null median 21.4, p99 27.3, max 29.4; feasible set tau4 in [28.5, 37.0]; picked 30.5 by null_p99 + 3.0. That is a calibration, not a certified false-alarm rate: zero events in that much audio bounds the rate far above the 0.40/h allowance, and certifying it would take about 7.5 h of drone-free audio. Whether the tier runs on a unit is a firmware setting.",
+ "null_measured": {
+  "seconds": 667,
+  "updates": 2536,
+  "median": 21.4,
+  "p95": 25.4,
+  "p99": 27.3,
+  "max": 29.4
+ },
+ "feasible_tau4": [
+  28.5,
+  37.0
+ ],
+ "config": {
+  "f0_lo": 110.0,
+  "f0_hi": 700.0,
+  "f0_step": 1.0,
+  "n_harm": 6,
+  "cap_db": 12.0,
+  "f_max_harm": 7800.0,
+  "local_lo": 6,
+  "local_hi": 24,
+  "win_frames": 64,
+  "update_frames": 8,
+  "accum": "median_of_means",
+  "n_sub": 4,
+  "tau4": 30.5,
+  "n4": 8,
+  "m4": 5,
+  "release_updates": 4,
+  "warmup_s": 2.5,
+  "freeze_tail_s": 0.5,
+  "cont_frac": 0.03,
+  "cont_min_hz": 4.0,
+  "ratios": [
+   1.0,
+   2.0,
+   3.0,
+   0.5,
+   0.3333333333333333
+  ],
+  "excluded_f0": []
+ },
+ "derived": {
+  "n_f0": 591,
+  "b_lo": 0,
+  "b_hi": 562,
+  "n_bins_used": 563,
+  "med_n": 38,
+  "ceiling": 43.67902723607993
+ }
+}

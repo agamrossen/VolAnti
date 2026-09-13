@@ -1,0 +1,90 @@
+{
+  "_comment": [
+    "Geometry is data, not code.",
+    "",
+    "Every expectation the bench tools check - which microphone leads which",
+    "for a clap from a named direction, and by how many samples - is derived",
+    "from the positions below, not written out by hand somewhere in a script.",
+    "A new board is then a --geometry flag, not a code change, and there is one",
+    "place where a mismeasured baseline can be wrong.",
+    "",
+    "Channel order everywhere in this project is [M1 M2 M3 M4].",
+    "Axes: +x = east, +y = north. North is the forward / USB-cable edge.",
+    "Positions are millimetres from the array centre, in the array plane.",
+    "",
+    "Detection is geometry-free. Nothing in this file feeds the detector.",
+    "It is read by the bench tools (quad_tap, quad_analysis, field_day,",
+    "field_test) and by the offline spatial mini-synth, all of which are",
+    "instruments, not the instrument under test."
+  ],
+  "c_sound_m_s": 343.0,
+  "fs": 16000,
+  "default": "breadboard_plus_v1",
+  "profiles": {
+    "breadboard_plus_v1": {
+      "name": "breadboard_plus_v1",
+      "status": "breadboard build, as built",
+      "shape": "plus / cross, centres coincident",
+      "positions_mm": {
+        "M1": [-20.32, 0.0],
+        "M2": [20.32, 0.0],
+        "M3": [0.0, 30.48],
+        "M4": [0.0, -30.48]
+      },
+      "labels": {
+        "M1": "WEST",
+        "M2": "EAST",
+        "M3": "NORTH",
+        "M4": "SOUTH"
+      },
+      "bus": {
+        "M1": "A",
+        "M2": "A",
+        "M3": "B",
+        "M4": "B"
+      },
+      "position_tolerance_mm": 0.5,
+      "notes": [
+        "Hand-built on breadboard, so the tolerance is a hand tolerance.",
+        "M1/M2 share I2S bus A and M3/M4 share bus B, which is why the N-S",
+        "axis and the inter-bus start offset are confounded on this build and",
+        "the E-W axis is not. That is a property of the wiring, not the",
+        "geometry, and it is the reason S4 (overhead clap) exists: an overhead",
+        "source has zero acoustic delay on every baseline, so anything left is",
+        "electrical."
+      ]
+    },
+    "pcb_rev_a2": {
+      "name": "pcb_rev_a2",
+      "status": "PCB rev A2, positions from the board design, not measured",
+      "shape": "corner square, 56 mm sides",
+      "positions_mm": {
+        "M1": [-28.0, -28.0],
+        "M2": [28.0, 28.0],
+        "M3": [-28.0, 28.0],
+        "M4": [28.0, -28.0]
+      },
+      "labels": {
+        "M1": "SW",
+        "M2": "NE",
+        "M3": "NW",
+        "M4": "SE"
+      },
+      "bus": {
+        "M1": "A",
+        "M2": "A",
+        "M3": "B",
+        "M4": "B"
+      },
+      "position_tolerance_mm": 0.1,
+      "notes": [
+        "A photo-plotted board, so 0.1 mm rather than 0.5 mm.",
+        "The longest baseline becomes the 79.20 mm diagonal, which moves the",
+        "half-wavelength crossover down from ~2813 Hz to ~2165 Hz. The comb",
+        "score reaches to 7800 Hz, so more of the scored teeth sit above the",
+        "crossover on this board than on the breadboard, which makes the CX-B",
+        "/ CX-C combiner question more relevant on the PCB, not less."
+      ]
+    }
+  }
+}

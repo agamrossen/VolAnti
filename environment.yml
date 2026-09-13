@@ -1,0 +1,16 @@
+# Python environment for the firmware build and the host tools.
+#
+#   conda env create -f environment.yml
+#
+# The build looks for this environment by name. To use a different Python
+# with numpy instead, set SENTRY_PYTHON. See docs/flashing.md.
+name: acoustic-detector
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy=2.4
+  - scipy
+  - matplotlib
+  - pyserial
+  - pysoundfile

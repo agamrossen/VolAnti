@@ -1,0 +1,119 @@
+{
+  "_comment": [
+    "Tier-3 (the wash tier) constants, from src/detector_t3.py's defaults.",
+    "",
+    "enabled_default is false because the calibration failed: the statistic",
+    "saturates at its cap on the real rotor and on insects, HVAC fans, tracked",
+    "vehicles and helicopters alike, so it does not separate them. The smallest",
+    "weighted false-alarm increment reachable at any threshold on the 2.03 h",
+    "negative corpus was 4.87/h against an allowance of 0.40.",
+    "",
+    "It is kept, built, tested and ported because on the first real propeller",
+    "recordings it was the only tier that detected anything: v1 peaks at 1.76",
+    "against a 1.70 threshold and raises zero events, Tier-2 raises zero, and",
+    "Tier-3 latches 94% of the 4 m capture and 88% of the 10 m one. The signal",
+    "is there; what is missing is a way to tell it from a fan. Whether the tier",
+    "runs on a unit is a firmware setting."
+  ],
+  "corpus_tag": "t3-v1",
+  "calibrated": false,
+  "enabled_default": false,
+  "increment_budget_weighted_fa_per_hour": 0.4,
+  "best_reachable_weighted_fa_per_hour": 4.866,
+  "w_null_measured": 11.0,
+  "t3": {
+    "hp_fc": 3000.0,
+    "env_lp_fc": 800.0,
+    "env_lp_poles": 3,
+    "decim": 8,
+    "grid_lo": 40.0,
+    "grid_hi": 650.0,
+    "fire_lo": 100.0,
+    "fire_hi": 320.0,
+    "n_harm": 4,
+    "weight_exp": 0.5,
+    "harm_cap_db": 12.0,
+    "cluster_frac": 0.0,
+    "tau3": 20.0,
+    "n3": 23,
+    "m3": 16,
+    "cont_frac": 0.03,
+    "n3_gap": 6,
+    "warmup_s": 2.0,
+    "release_updates": 8,
+    "freeze_tail_s": 0.5,
+    "enabled_default": false
+  },
+  "front_end": {
+    "hp_sos": [
+      [
+        0.19050441083226208,
+        -0.38100882166452416,
+        0.19050441083226208,
+        1.0,
+        -0.4129187044810216,
+        0.07900857355927177
+      ],
+      [
+        1.0,
+        -2.0,
+        1.0,
+        1.0,
+        -0.565450073893807,
+        0.47759225007251704
+      ]
+    ],
+    "env_lp_a": 0.7304026910486456,
+    "fs_env": 2000,
+    "env_nfft": 1024,
+    "env_hop": 256,
+    "welch_n": 4,
+    "med_half": 8,
+    "med_skip": 1,
+    "rate_step": 1.0,
+    "harm_f_max": 950.0
+  },
+  "evidence": {
+    "real_captures": {
+      "rotor_4m_0": {
+        "v1_peak": 1.76,
+        "v1_events": 0,
+        "t2_peak": 1.93,
+        "t2_events": 0,
+        "t3_events": 1,
+        "t3_latched_frac": 0.94
+      },
+      "rotor_10m_1": {
+        "v1_peak": 1.77,
+        "v1_events": 0,
+        "t2_peak": 2.1,
+        "t2_events": 0,
+        "t3_events": 1,
+        "t3_latched_frac": 0.88
+      },
+      "quiet": {
+        "v1_peak": 1.43,
+        "v1_events": 0,
+        "t2_peak": 1.75,
+        "t2_events": 0,
+        "t3_events": 0,
+        "t3_latched_frac": 0.0
+      },
+      "talk": {
+        "v1_peak": 2.71,
+        "v1_events": 0,
+        "t2_peak": 2.43,
+        "t2_events": 0,
+        "t3_events": 0,
+        "t3_latched_frac": 0.0
+      }
+    },
+    "homespeech_6min": {
+      "t3_events": 0,
+      "W_median": 11.7,
+      "W_p99": 21.0,
+      "W_max": 31.1
+    },
+    "shedding_crossover_ms": 11.5
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "_comment": [
+    "Written by src/evaluate_t2.py --calibrate. Do not edit by hand.",
+    "Tier-2 constants. v1's constants live in device_config.json and",
+    "are not affected by anything here.",
+    "tau2 is the smallest threshold at which the combined (v1 OR T2)",
+    "weighted FA/h holds the HIGH_ALERT budget of 4.0 on non-gust",
+    "negatives, with v1 pinned at 1.70, and both real-audio gates",
+    "pass (0 T2 events on the speech and quiet-room captures)."
+  ],
+  "corpus_tag": "t2-v1",
+  "combined_budget_weighted_fa_per_hour": 4.0,
+  "v1_threshold_pinned": 1.7,
+  "t2": {
+    "f2_lo": 200.0,
+    "f2_hi": 800.0,
+    "tau2_rise_s": 30.0,
+    "tau2_fall_s": 0.8,
+    "sat_log": 2.5,
+    "tau2": 1.15,
+    "n2": 63,
+    "m2": 44,
+    "n2_gap": 16,
+    "t2_warmup_s": 4.0,
+    "release_frames": 31,
+    "cont_frac": 0.02,
+    "cont_min_hz": 12.0,
+    "excluded_f0": [],
+    "half_rate": false,
+    "kappa_f_max": 1500.0
+  },
+  "half_rate_default_on_device": true,
+  "half_rate_rationale": "Full-rate T2 is budgeted at 9-12 ms on top of the 4-channel guard's ~22.7 ms, which does not provably fit the 32 ms hop. The device ships half-rate until it measures full-rate p99 < 30 ms; halving the rate halves every frame count so the integration in seconds is unchanged.",
+  "derived_half_rate": {
+    "n2": 32,
+    "m2": 22,
+    "n2_gap": 8,
+    "release_frames": 16
+  },
+  "excluded_f0_note": "Empty by default. Up to 4 (centre_hz, tol_hz) bands in which T2 hits are not counted, for a known persistent local source. A human fills this from a site baseline; there is no self-learning."
+}
