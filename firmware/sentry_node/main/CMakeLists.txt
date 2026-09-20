@@ -110,45 +110,205 @@ set(GEN_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 set(PROJ_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 get_filename_component(REPO_DIR ${PROJ_DIR}/../.. ABSOLUTE)
 
-# The generator needs a Python interpreter with numpy. SENTRY_PYTHON, given
-# as -DSENTRY_PYTHON=<path> or set in the environment, names one directly.
-# Without it the build uses the conda environment created from
-# environment.yml at the repository root.
+# --------------------------------------------------------------------------
+# The interpreter that runs the generator. What it has to be is a Python 3
+# with numpy and nothing else: gen_headers.py imports numpy, src/detector.py
+# and src/operating_point.py, and those import numpy and the standard
+# library.
+#
+# So every candidate is ASKED whether it can import numpy instead of being
+# trusted for where it came from, and that is what makes it safe to look at
+# PATH. Under `idf.py` the ESP-IDF virtualenv is first on PATH and has no
+# numpy, so a search that went by name would hand the generator an
+# interpreter that dies on `import numpy` part way through the build - the
+# same trap `conda run ... python` fell into. Asking rejects it and moves on.
+#
+# In order: SENTRY_PYTHON, the conda environment from environment.yml, an
+# active conda environment, python3 and python from PATH, and the Windows py
+# launcher. Which one wins does not change what comes out: 3.11 with numpy
+# 2.4.6, 3.14 with 2.5.3 and 3.10 with 1.26.4 emit the same eleven headers,
+# byte for byte.
+# --------------------------------------------------------------------------
+
+# TRUE when this interpreter satisfies the generator. 3.7 is the floor
+# because src/detector.py uses dataclasses, and numpy is the whole of the
+# dependency: there is no import from outside the standard library anywhere
+# else on the generator's path.
+function(sentry_python_ok py out)
+    set(${out} FALSE PARENT_SCOPE)
+    if(NOT EXISTS "${py}")
+        return()
+    endif()
+    execute_process(RESULT_VARIABLE sentry_rc OUTPUT_QUIET ERROR_QUIET
+        COMMAND "${py}" -c
+        "import sys, numpy; sys.exit(0 if sys.version_info >= (3, 7) else 1)")
+    if(sentry_rc STREQUAL "0")
+        set(${out} TRUE PARENT_SCOPE)
+    endif()
+endfunction()
+
+# An environment keeps its interpreter in bin/ on macOS and Linux, and at the
+# top or in Scripts/ on Windows. All three spellings go into the list and
+# EXISTS decides, so the search does not rest on detecting the platform.
+macro(sentry_add_env_prefix prefix)
+    list(APPEND SENTRY_CANDIDATES "${prefix}/bin/python"
+                                  "${prefix}/python.exe"
+                                  "${prefix}/Scripts/python.exe")
+endmacro()
+
 if(DEFINED ENV{SENTRY_PYTHON})
     set(SENTRY_PYTHON "$ENV{SENTRY_PYTHON}" CACHE FILEPATH
-        "Python with numpy for scripts/gen_headers.py" FORCE)
+        "Python 3 with numpy for scripts/gen_headers.py" FORCE)
 endif()
+
+set(SENTRY_PY "")
+set(SENTRY_REJECTED "")
 
 if(SENTRY_PYTHON)
-    set(SENTRY_PY ${SENTRY_PYTHON})
-    if(NOT EXISTS ${SENTRY_PY})
-        message(FATAL_ERROR "SENTRY_PYTHON is set to ${SENTRY_PY}, which does "
-                            "not exist")
+    # Named outright, so it has to work, and saying why here beats a
+    # traceback out of the generator part way through the build.
+    file(TO_CMAKE_PATH "${SENTRY_PYTHON}" SENTRY_PY)
+    if(NOT EXISTS "${SENTRY_PY}")
+        find_program(SENTRY_PY_ON_PATH NAMES "${SENTRY_PY}" NO_CACHE)
+        if(SENTRY_PY_ON_PATH)
+            set(SENTRY_PY "${SENTRY_PY_ON_PATH}")
+        else()
+            message(FATAL_ERROR "SENTRY_PYTHON is ${SENTRY_PYTHON}, which is "
+                                "neither a file nor a program on PATH")
+        endif()
+    endif()
+    sentry_python_ok("${SENTRY_PY}" SENTRY_PY_WORKS)
+    if(NOT SENTRY_PY_WORKS)
+        message(FATAL_ERROR
+            "SENTRY_PYTHON is ${SENTRY_PYTHON}, which is not a Python 3.7 or "
+            "newer that can import numpy. Install numpy into it with\n"
+            "      \"${SENTRY_PY}\" -m pip install numpy")
     endif()
 else()
-    find_program(SENTRY_CONDA conda
-                 HINTS /opt/homebrew/Caskroom/miniforge/base/bin
-                       $ENV{HOME}/miniforge3/bin $ENV{HOME}/miniconda3/bin
-                       /opt/homebrew/bin /usr/local/bin)
-    if(NOT SENTRY_CONDA)
-        message(FATAL_ERROR "conda not found. Create the environment from "
-                            "environment.yml, or set SENTRY_PYTHON to a "
-                            "Python with numpy")
+    set(SENTRY_CANDIDATES "")
+
+    # The environment environment.yml creates, wherever conda put it. From
+    # conda's own location where the shell has conda in it, and from the
+    # default install roots where it does not - the Windows installer leaves
+    # conda off PATH, so a build started from VS Code or an ESP-IDF terminal
+    # usually cannot see it at all.
+    set(SENTRY_CONDA_ROOTS "")
+    if(DEFINED ENV{CONDA_EXE})
+        get_filename_component(SENTRY_DIR "$ENV{CONDA_EXE}" DIRECTORY)
+        get_filename_component(SENTRY_DIR "${SENTRY_DIR}" DIRECTORY)
+        list(APPEND SENTRY_CONDA_ROOTS "${SENTRY_DIR}")
+    endif()
+    if(DEFINED ENV{CONDA_PREFIX})
+        # The base environment, or an environment under <base>/envs.
+        get_filename_component(SENTRY_DIR "$ENV{CONDA_PREFIX}/../.." ABSOLUTE)
+        list(APPEND SENTRY_CONDA_ROOTS "$ENV{CONDA_PREFIX}" "${SENTRY_DIR}")
+    endif()
+    find_program(SENTRY_CONDA NAMES conda conda.exe conda.bat NO_CACHE)
+    if(SENTRY_CONDA)
+        # What is on PATH is usually a link or a condabin shim; the
+        # environments sit next to the real one.
+        get_filename_component(SENTRY_DIR "${SENTRY_CONDA}" REALPATH)
+        get_filename_component(SENTRY_DIR "${SENTRY_DIR}" DIRECTORY)
+        get_filename_component(SENTRY_DIR "${SENTRY_DIR}" DIRECTORY)
+        list(APPEND SENTRY_CONDA_ROOTS "${SENTRY_DIR}")
+    endif()
+    foreach(SENTRY_HOME "$ENV{HOME}" "$ENV{USERPROFILE}")
+        if(SENTRY_HOME)
+            list(APPEND SENTRY_CONDA_ROOTS "${SENTRY_HOME}/miniforge3"
+                 "${SENTRY_HOME}/miniconda3" "${SENTRY_HOME}/anaconda3"
+                 "${SENTRY_HOME}/mambaforge" "${SENTRY_HOME}/.conda")
+        endif()
+    endforeach()
+    list(APPEND SENTRY_CONDA_ROOTS /opt/conda /opt/miniconda3
+         /opt/homebrew/Caskroom/miniforge/base
+         C:/ProgramData/miniconda3 C:/ProgramData/anaconda3)
+    foreach(SENTRY_ROOT IN LISTS SENTRY_CONDA_ROOTS)
+        sentry_add_env_prefix("${SENTRY_ROOT}/envs/acoustic-detector")
+    endforeach()
+
+    # An environment that is already active, whatever it is called.
+    if(DEFINED ENV{CONDA_PREFIX})
+        sentry_add_env_prefix("$ENV{CONDA_PREFIX}")
     endif()
 
-    # Call the env's interpreter DIRECTLY, never `conda run ... python`. Under
-    # `eim run` the ESP-IDF venv is already on PATH, and `conda run` resolves the
-    # bare name `python` against it - so the generator ran under the IDF
-    # interpreter and died on `import numpy`. The env python is derived from
-    # conda's own location, so this stays correct wherever conda is installed.
-    get_filename_component(SENTRY_CONDA_BIN ${SENTRY_CONDA} DIRECTORY)
-    set(SENTRY_PY ${SENTRY_CONDA_BIN}/../envs/acoustic-detector/bin/python)
-    if(NOT EXISTS ${SENTRY_PY})
-        message(FATAL_ERROR "conda env 'acoustic-detector' python not found at "
-                            "${SENTRY_PY}. Create it with `conda env create -f "
-                            "environment.yml`, or set SENTRY_PYTHON")
+    # Then whatever Python 3 the machine has. PATH is walked entry by
+    # entry rather than handed to find_program, because find_program stops
+    # at the first match and under `idf.py` the first python on PATH is the
+    # ESP-IDF virtualenv: one numpy-less interpreter at the front would
+    # otherwise hide every good one behind it. TO_CMAKE_PATH splits a search
+    # path on : or ; as the platform requires.
+    file(TO_CMAKE_PATH "$ENV{PATH}" SENTRY_PATH_DIRS)
+    foreach(SENTRY_DIR IN LISTS SENTRY_PATH_DIRS)
+        list(APPEND SENTRY_CANDIDATES "${SENTRY_DIR}/python3"
+             "${SENTRY_DIR}/python" "${SENTRY_DIR}/python3.exe"
+             "${SENTRY_DIR}/python.exe")
+    endforeach()
+    find_program(SENTRY_PY3 NAMES python3 NO_CACHE)
+    if(SENTRY_PY3)
+        list(APPEND SENTRY_CANDIDATES "${SENTRY_PY3}")
+    endif()
+    find_program(SENTRY_PY_ANY NAMES python NO_CACHE)
+    if(SENTRY_PY_ANY)
+        list(APPEND SENTRY_CANDIDATES "${SENTRY_PY_ANY}")
+    endif()
+
+    list(REMOVE_DUPLICATES SENTRY_CANDIDATES)
+    foreach(SENTRY_CAND IN LISTS SENTRY_CANDIDATES)
+        sentry_python_ok("${SENTRY_CAND}" SENTRY_CAND_WORKS)
+        if(SENTRY_CAND_WORKS)
+            set(SENTRY_PY "${SENTRY_CAND}")
+            break()
+        elseif(EXISTS "${SENTRY_CAND}")
+            list(APPEND SENTRY_REJECTED "${SENTRY_CAND}")
+        endif()
+    endforeach()
+
+    # The Windows launcher is not an interpreter, it picks one, so it cannot
+    # go in the list above. python.org's installer leaves py on PATH even
+    # when it does not put Python itself there, which is the common case.
+    if(NOT SENTRY_PY)
+        find_program(SENTRY_PY_LAUNCHER NAMES py NO_CACHE)
+        if(SENTRY_PY_LAUNCHER)
+            execute_process(RESULT_VARIABLE sentry_rc ERROR_QUIET
+                OUTPUT_VARIABLE SENTRY_LAUNCHED
+                COMMAND "${SENTRY_PY_LAUNCHER}" -3 -c
+                "import sys; sys.stdout.write(sys.executable)")
+            string(STRIP "${SENTRY_LAUNCHED}" SENTRY_LAUNCHED)
+            if(sentry_rc STREQUAL "0" AND SENTRY_LAUNCHED)
+                file(TO_CMAKE_PATH "${SENTRY_LAUNCHED}" SENTRY_LAUNCHED)
+                sentry_python_ok("${SENTRY_LAUNCHED}" SENTRY_CAND_WORKS)
+                if(SENTRY_CAND_WORKS)
+                    set(SENTRY_PY "${SENTRY_LAUNCHED}")
+                elseif(EXISTS "${SENTRY_LAUNCHED}")
+                    list(APPEND SENTRY_REJECTED "${SENTRY_LAUNCHED}")
+                endif()
+            endif()
+        endif()
     endif()
 endif()
+
+if(NOT SENTRY_PY)
+    set(SENTRY_TRIED "")
+    if(SENTRY_REJECTED)
+        list(REMOVE_DUPLICATES SENTRY_REJECTED)
+        string(REPLACE ";" "\n      " SENTRY_TRIED "${SENTRY_REJECTED}")
+        set(SENTRY_TRIED
+            "\n  Found, but without numpy:\n      ${SENTRY_TRIED}")
+    endif()
+    message(FATAL_ERROR
+        "no Python 3 with numpy was found. The build needs one because it "
+        "generates main/generated/ from src/ and data/ rather than keeping "
+        "the headers in the repository.${SENTRY_TRIED}\n"
+        "  Add numpy to a Python you already have:\n"
+        "      python -m pip install numpy\n"
+        "      py -m pip install numpy   (Windows)\n"
+        "  or create the environment from environment.yml at the top of the "
+        "repository:\n"
+        "      conda env create -f environment.yml\n"
+        "  or name an interpreter yourself:\n"
+        "      idf.py -DSENTRY_PYTHON=<path to python> build")
+endif()
+message(STATUS "sentry: generator python: ${SENTRY_PY}")
 
 set(GEN_HEADERS
     ${GEN_DIR}/detector_config.h

@@ -4,13 +4,23 @@ The firmware is in [firmware/sentry_node](../firmware/sentry_node/). Building it
 
 ## Setting up
 
-Install ESP-IDF v6.0 by following Espressif's getting started guide, and open a terminal where `idf.py` works. Then create the Python environment from the root of this repository:
+Install ESP-IDF v6.0 by following Espressif's getting started guide, and open a terminal where `idf.py` works. The Python side needs numpy and nothing else, and the build looks for an interpreter itself: it takes the first one it finds that can actually import numpy, starting with the environment `environment.yml` describes and ending with whatever is on PATH. If you already have a Python 3 with numpy, there is nothing to set up.
+
+If you do not, either install numpy where you want it:
+
+    python -m pip install numpy      # py -m pip install numpy on Windows
+
+or create the development environment from the root of this repository, which pins the versions the detector was measured with:
 
     conda env create -f environment.yml
 
-The build finds that environment by its name, `acoustic-detector`. To use a different interpreter instead, point the build at any Python 3 with numpy installed:
+conda is not required. Any Python 3 with numpy writes the same headers, byte for byte. To name an interpreter yourself instead of letting the build look:
 
-    export SENTRY_PYTHON=/path/to/python
+    export SENTRY_PYTHON=/path/to/python            # macOS, Linux
+    $env:SENTRY_PYTHON = "C:\path\to\python.exe"    # Windows PowerShell
+    set SENTRY_PYTHON=C:\path\to\python.exe         # Windows cmd
+
+`idf.py -DSENTRY_PYTHON=<path> build` does the same thing. When no interpreter is found the build stops while it is configuring and names the ones it tried, instead of failing part way through.
 
 ## Building and flashing
 

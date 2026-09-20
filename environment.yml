@@ -2,8 +2,10 @@
 #
 #   conda env create -f environment.yml
 #
-# The build looks for this environment by name. To use a different Python
-# with numpy instead, set SENTRY_PYTHON. See docs/flashing.md.
+# The build prefers this environment by name, but it does not require it, and
+# it does not require conda: any Python 3 with numpy will do, and SENTRY_PYTHON
+# names one outright. The rest of this list is for the host tools in src/ and
+# firmware/sentry_node/scripts/. See docs/flashing.md.
 name: acoustic-detector
 channels:
   - conda-forge
